@@ -1,0 +1,3011 @@
+<!DOCTYPE html>
+<!-- v122 -->
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AIB &amp; Safety Audit — DC7171 Lamphun</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+  // Fallback: ถ้า jsdelivr โดนบล็อก (firewall/adblock) ให้ลองโหลดจาก unpkg แทน
+  if (typeof lucide === 'undefined') {
+    document.write('<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"><\/script>');
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        cream: { 50:'#FAFAF8', 100:'#F0EFE7', 200:'#E4EBF6', 300:'#D8E3F2' },
+        warm:  { 50:'#FFF8F0', 100:'#FFF0E0', 200:'#FFD9B0', 300:'#FFC285' },
+        brown: { 50:'#F2F6FC', 100:'#F0EFE7', 200:'#A9C2E4', 300:'#7FA0CE', 400:'#16191A', 500:'#16191A', 600:'#16191A', 700:'#0F213D' },
+        sand:  { 100:'#EEF3FA', 200:'#E4E2D9', 300:'#6B7270', 400:'#6B7270' },
+      },
+      fontFamily: { sans:['Sarabun','sans-serif'], display:['DM Mono','monospace'] },
+      borderRadius: { '2xl':'1rem','3xl':'1.5rem','4xl':'2rem' },
+      boxShadow: {
+        'soft': '0 2px 16px 0 rgba(30,75,140,0.06)',
+        'card': '0 4px 24px 0 rgba(30,75,140,0.08)',
+        'float':'0 8px 40px 0 rgba(30,75,140,0.12)',
+      }
+    }
+  }
+}
+</script>
+<style>
+  *{box-sizing:border-box;}
+  body{font-family:'Sarabun',sans-serif;background:#FAFAF8;color:#16191A;}
+  .font-display{font-family:'DM Mono',monospace;}
+  /* Sidebar */
+  .sidebar{background:linear-gradient(180deg,#fff 0%,#F7FAFD 100%);border-right:1px solid #E4E2D9;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:12px;cursor:pointer;transition:all .2s;color:#4A4F4C;font-size:14.5px;font-weight:500;}
+  .nav-item:hover{background:#F0EFE7;color:#16191A;}
+  .nav-item.active{background:linear-gradient(135deg,#16191A,#16191A);color:#fff;box-shadow:0 4px 16px rgba(30,75,140,0.25);}
+  .nav-item.active svg{color:#FFD9B0;}
+  /* KPI Card */
+  /* Executive Hero Banner */
+  .hero-banner{background:linear-gradient(120deg,#16191A 0%,#16191A 55%,#16191A 100%);border-radius:24px;box-shadow:0 8px 32px rgba(20,50,100,0.22);padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;color:#fff;}
+  .hero-facility-name{font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;letter-spacing:.2px;}
+  .hero-facility-sub{font-size:12.5px;opacity:.78;margin-top:2px;}
+  .hero-banner-mid{display:flex;align-items:center;gap:14px;padding:8px 22px;border-left:1px solid rgba(255,255,255,.22);border-right:1px solid rgba(255,255,255,.22);}
+  .hero-days-num{font-family:'Outfit',sans-serif;font-weight:700;font-size:40px;line-height:1;min-width:64px;text-align:center;}
+  .hero-days-label{font-size:11.5px;line-height:1.4;opacity:.9;font-weight:600;}
+  .hero-updated{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.85;font-weight:500;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:999px;}
+  /* YTD secondary stat */
+  .hero-ytd{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:16px;margin-left:2px;border-left:1px dashed rgba(255,255,255,.28);}
+  .hero-ytd-num{font-family:'Outfit',sans-serif;font-weight:700;font-size:17px;line-height:1;}
+  .hero-ytd-label{font-size:9.5px;opacity:.75;margin-top:3px;text-align:center;line-height:1.3;}
+  @media(max-width:768px){.hero-banner{padding:18px;} .hero-banner-mid{border-left:none;border-right:none;padding:10px 0;order:3;width:100%;justify-content:center;border-top:1px solid rgba(255,255,255,.2);margin-top:6px;}}
+  /* KPI trend badge */
+  .kpi-trend{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:700;padding:1px 6px;border-radius:8px;}
+  .kpi-trend.up-bad{background:#FBE8E4;color:#D9432B;}
+  .kpi-trend.down-good{background:#E6F5EC;color:#1E9E5A;}
+  .kpi-trend.up-good{background:#E6F5EC;color:#1E9E5A;}
+  .kpi-trend.down-bad{background:#FBE8E4;color:#D9432B;}
+  .kpi-trend.flat{background:#F1F4F9;color:#6B7270;}
+  /* ===== REPORT HEADER (สไตล์รายงานทางการ — ใช้ทั้งบนจอและตอนพิมพ์/Export PDF) ===== */
+  .report-header{background:linear-gradient(120deg,#16191A 0%,#16191A 60%,#16191A 100%);border-radius:24px;box-shadow:0 8px 32px rgba(20,50,100,0.22);padding:24px 28px;color:#fff;}
+  .report-header-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:20px;letter-spacing:.2px;}
+  .report-header-sub{font-size:12.5px;opacity:.82;margin-top:3px;}
+  .report-header-meta{font-size:12px;opacity:.85;background:rgba(255,255,255,.14);padding:6px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;}
+  @media print {
+    #sidebar, header, .no-print, #notif-panel { display:none !important; }
+    .main-content{margin-left:0 !important;}
+    main{padding:0 !important;overflow:visible !important;}
+    body{background:#fff !important;}
+    .glass-card, .kpi-card{box-shadow:none !important;border:1px solid #ddd !important;break-inside:avoid;}
+    .report-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none !important;}
+    .page{display:none !important;}
+    .page.active{display:block !important;}
+  }
+  /* Dashboard view mode (Executive vs Operations) */
+  #page-dashboard.mode-exec .ops-only{display:none !important;}
+  #page-dashboard.mode-ops .exec-only{display:none !important;}
+  .kpi-card{background:#fff;border-radius:20px;border:1px solid #E4E2D9;box-shadow:0 2px 16px rgba(30,75,140,0.06);transition:transform .2s,box-shadow .2s;}
+  .kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(30,75,140,0.10);}
+  /* Glass Card */
+  .glass-card{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border-radius:24px;border:1px solid rgba(237,227,213,0.8);box-shadow:0 4px 24px rgba(30,75,140,0.08);}
+  /* Badge */
+  .badge-high{background:#FFF4CC;color:#D9432B;border:1px solid #FFCCA8;}
+  .badge-medium{background:#FFF9E6;color:#B8860B;border:1px solid #FFE8A0;}
+  .badge-low{background:#E6F5EC;color:#1E9E5A;border:1px solid #A8DFB8;}
+  .badge-critical{background:#FBE8E4;color:#D9432B;border:1px solid #F5BCBA;}
+  .badge-open{background:#F0EFE7;color:#4A4F4C;border:1px solid #B8CFFF;}
+  .badge-closed{background:#F0F0F0;color:#555;border:1px solid #D0D0D0;}
+  .badge-progress{background:#F0EFE7;color:#16191A;border:1px solid #CDB8FF;}
+  .badge-pending{background:#FFF4CC;color:#B8860B;border:1px solid #FFD8A0;}
+  /* Toast */
+  #toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+  /* Global loading overlay — เบลอทั้งหน้าจอตอนกำลังเชื่อม/โหลด/บันทึกข้อมูล */
+  #global-loading-overlay{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(247,249,252,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+  #global-loading-overlay.show{display:flex;}
+  .global-loading-spinner{width:44px;height:44px;border:4px solid #E4E2D9;border-top-color:#16191A;border-radius:50%;animation:spin .7s linear infinite;}
+  #global-loading-text{font-size:13.5px;font-weight:600;color:#16191A;background:#fff;padding:8px 18px;border-radius:999px;box-shadow:0 4px 20px rgba(30,75,140,.15);}
+  .toast{padding:12px 20px;border-radius:14px;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,0.14);border-left:4px solid;display:flex;align-items:center;gap:10px;font-size:14px;animation:slideIn .3s ease;max-width:360px;}
+  .toast.success{border-color:#1E9E5A;color:#1E9E5A;}
+  .toast.error{border-color:#D9432B;color:#D9432B;}
+  .toast.info{border-color:#16191A;color:#16191A;}
+  @keyframes slideIn{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(30,41,59,0.4);backdrop-filter:blur(4px);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal-box{background:#fff;border-radius:28px;box-shadow:0 24px 80px rgba(0,0,0,0.18);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;animation:popIn .25s ease;}
+  @keyframes popIn{from{transform:scale(.92);opacity:0;}to{transform:scale(1);opacity:1;}}
+  /* Table */
+  .data-table th{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#6B7270;padding:12px 16px;background:#F0EFE7;}
+  .data-table td{padding:14px 16px;border-bottom:1px solid #ECEAE0;font-size:13.5px;}
+  .data-table tr:hover td{background:#F8FAFD;}
+  /* Loading */
+  .spinner{width:20px;height:20px;border:2.5px solid #E4E2D9;border-top-color:#16191A;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:#F5EDE0;}
+  ::-webkit-scrollbar-thumb{background:#6B7270;border-radius:3px;}
+  /* Mobile sidebar */
+  .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:40;display:none;}
+  @media(max-width:768px){
+    .sidebar-overlay.show{display:block;}
+    .sidebar{position:fixed;left:-280px;top:0;height:100vh;z-index:50;transition:left .3s ease;}
+    .sidebar.open{left:0;}
+    .main-content{margin-left:0!important;}
+  }
+  /* Heat map cell */
+  .heat-cell{border-radius:8px;cursor:pointer;transition:opacity .2s;}
+  .heat-cell:hover{opacity:.75;}
+  /* Input */
+  .form-input{width:100%;border:1.5px solid #E4E2D9;border-radius:12px;padding:10px 14px;font-size:14px;font-family:'Sarabun',sans-serif;background:#fff;transition:border .2s,box-shadow .2s;outline:none;}
+  .form-input:focus{border-color:#16191A;box-shadow:0 0 0 3px rgba(30,75,140,0.10);}
+  select.form-input{cursor:pointer;}
+  /* Quick action btn */
+  .qa-btn{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:16px;border:none;width:100%;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;transition:all .2s;}
+  .qa-primary{background:linear-gradient(135deg,#16191A,#16191A);color:#fff;box-shadow:0 4px 16px rgba(30,75,140,0.25);}
+  .qa-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(30,75,140,0.30);}
+  .qa-secondary{background:#F0EFE7;color:#16191A;}
+  .qa-secondary:hover{background:#EBD5C0;}
+  .qa-tertiary{background:#F0EFE7;color:#4A4F4C;}
+  .qa-tertiary:hover{background:#D8E7FF;}
+  /* Page hidden */
+  .page{display:none;}
+  .page.active{display:block;}
+  /* Section title */
+  .section-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:#16191A;margin-bottom:16px;}
+  /* Image preview */
+  #img-preview-container img{border-radius:12px;object-fit:cover;}
+  /* Map picker (add/edit form) */
+  .map-picker-wrap{position:relative;border-radius:16px;overflow:hidden;cursor:crosshair;border:1.5px solid #E4E2D9;user-select:none;}
+  .map-picker-wrap img{width:100%;display:block;pointer-events:none;}
+  .map-pin{position:absolute;width:22px;height:22px;margin-left:-11px;margin-top:-22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));pointer-events:none;}
+  /* Map view (near miss list) */
+  .map-view-wrap{position:relative;border-radius:20px;overflow:hidden;border:1px solid #E4E2D9;}
+  .map-view-wrap img{width:100%;display:block;}
+  .map-dot{position:absolute;width:16px;height:16px;margin-left:-8px;margin-top:-8px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);cursor:pointer;transition:transform .15s;}
+  .map-dot:hover{transform:scale(1.35);z-index:5;}
+  .map-dot.selected-highlight{animation:selectPulse 1.4s ease-in-out 3;z-index:6;}
+  @keyframes selectPulse{
+    0%,100%{transform:scale(1.35);box-shadow:0 0 0 0 rgba(30,75,140,.55),0 2px 6px rgba(0,0,0,.35);}
+    50%{transform:scale(1.75);box-shadow:0 0 0 9px rgba(30,75,140,0),0 2px 6px rgba(0,0,0,.35);}
+  }
+  .nm-mini-map-card{display:flex;align-items:center;gap:14px;cursor:pointer;transition:box-shadow .2s,transform .2s;}
+  .nm-mini-map-card:hover{transform:translateY(-1px);}
+  .notif-panel{position:absolute;top:calc(100% + 10px);right:0;width:340px;max-width:88vw;background:#fff;border:1px solid #E4E2D9;border-radius:20px;box-shadow:0 12px 32px rgba(30,41,59,.16);z-index:50;animation:popIn .15s ease-out;overflow:hidden;}
+  .notif-panel-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #ECEAE0;}
+  .notif-list{max-height:360px;overflow-y:auto;}
+  .notif-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid #EFF4FA;transition:background .15s;}
+  .notif-item:last-child{border-bottom:none;}
+  .notif-item:hover{background:#F0EFE7;}
+  .notif-item-icon{width:32px;height:32px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  /* Heat map pulsing markers — จุดที่เกิดเคสกระพริบช้าๆ ให้ดูมีชีวิตชีวา */
+  .heat-pulse-dot{position:absolute;width:8px;height:8px;margin-left:-4px;margin-top:-4px;border-radius:50%;background:rgba(230,81,0,0.95);pointer-events:none;animation:heatPulse 3s ease-in-out infinite;}
+  @keyframes heatPulse{
+    0%   { transform:scale(0.7); opacity:0.9; box-shadow:0 0 0 0 rgba(230,81,0,0.55); }
+    60%  { transform:scale(1.3); opacity:0.25; box-shadow:0 0 0 14px rgba(230,81,0,0); }
+    100% { transform:scale(0.7); opacity:0; box-shadow:0 0 0 0 rgba(230,81,0,0); }
+  }
+  .map-legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;}
+  /* Heatmap — จุดที่แก้ไขแล้ว แสดงเป็นวงเขียวนิ่งๆ แยกจากความหนาแน่นของปัญหาที่ยังค้าง */
+  .heat-resolved-dot{position:absolute;width:13px;height:13px;margin-left:-6.5px;margin-top:-6.5px;border-radius:50%;background:#1E9E5A;border:2px solid #fff;box-shadow:0 0 0 3px rgba(30,122,58,.25),0 1px 4px rgba(0,0,0,.25);pointer-events:none;z-index:2;}
+  .view-toggle-btn{padding:8px 16px;border-radius:12px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .2s;}
+  .view-toggle-btn.active{background:linear-gradient(135deg,#16191A,#16191A);color:#fff;}
+  .view-toggle-btn:not(.active){background:#F0EFE7;color:#16191A;}
+  /* Floating back button — มุมขวาล่าง */
+  #floating-back-btn{
+    position:fixed;right:24px;bottom:24px;z-index:800;
+    width:52px;height:52px;border-radius:50%;
+    background:linear-gradient(135deg,#16191A,#16191A);color:#fff;
+    display:none;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px rgba(30,75,140,0.35);
+    border:none;cursor:pointer;transition:transform .15s,box-shadow .2s;
+  }
+  #floating-back-btn:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 12px 32px rgba(30,75,140,0.42);}
+  #floating-back-btn.show{display:flex;animation:floatBackIn .25s ease;}
+  @keyframes floatBackIn{from{opacity:0;transform:scale(.7);}to{opacity:1;transform:scale(1);}}
+  @media(max-width:768px){ #floating-back-btn{right:16px;bottom:16px;width:46px;height:46px;} }
+  /* ============================================================
+     WAYFINDING LIGHT THEME — reskin overrides
+     ============================================================ */
+  body{background:#FAFAF8 !important;color:#16191A !important;}
+  .font-display{letter-spacing:-.2px;}
+  ::-webkit-scrollbar-track{background:#ECEAE0 !important;}
+  ::-webkit-scrollbar-thumb{background:#C7C4B6 !important;}
+
+  .glass-card{background:#fff !important;backdrop-filter:none !important;border:1px solid #E4E2D9 !important;border-radius:2px !important;box-shadow:none !important;}
+  .kpi-card{background:#fff !important;border:1px solid #E4E2D9 !important;border-radius:2px !important;border-bottom:4px solid #FFC400 !important;box-shadow:none !important;}
+  .kpi-card:hover{transform:none !important;box-shadow:none !important;}
+  .kpi-card.wf-good{border-bottom-color:#1E9E5A !important;}
+  .kpi-card.wf-bad{border-bottom-color:#D9432B !important;}
+
+  .section-title{font-family:'DM Mono',monospace !important;font-size:11.5px !important;text-transform:uppercase;letter-spacing:.06em;color:#6B7270 !important;font-weight:500 !important;}
+
+  .qa-btn, .view-toggle-btn, .modal-box, .form-input, .toast, .notif-panel, #global-loading-text{border-radius:2px !important;}
+  .qa-primary{background:#16191A !important;color:#fff !important;box-shadow:none !important;}
+  .qa-primary:hover{transform:none !important;background:#2B2F30 !important;box-shadow:none !important;}
+  .qa-secondary{background:#F0EFE7 !important;color:#16191A !important;}
+  .qa-secondary:hover{background:#E4E2D9 !important;}
+  .qa-tertiary{background:#FFF4CC !important;color:#7A5E00 !important;}
+  .view-toggle-btn.active{background:#FFC400 !important;color:#16191A !important;}
+  .view-toggle-btn:not(.active){background:#F0EFE7 !important;color:#16191A !important;}
+  .form-input{border:1px solid #E4E2D9 !important;}
+  .form-input:focus{border-color:#16191A !important;box-shadow:none !important;}
+
+  .badge-open{background:#FFF4CC !important;color:#7A5E00 !important;border:1px solid #FFC400 !important;}
+  .badge-pending{background:#F0EFE7 !important;color:#6B7270 !important;border:1px solid #D6D3C6 !important;}
+  .badge-critical{background:#FBE8E4 !important;color:#B8331F !important;border:1px solid #D9432B !important;}
+  .badge-low{background:#E6F5EC !important;color:#137A45 !important;border:1px solid #1E9E5A !important;}
+
+  .hero-banner{background:#fff !important;border:1px solid #E4E2D9 !important;box-shadow:none !important;border-radius:2px !important;color:#16191A !important;}
+  .hero-facility-name{color:#16191A !important;font-family:'DM Mono',monospace;font-size:15px;}
+  .hero-facility-sub{color:#6B7270 !important;font-family:'DM Mono',monospace;font-size:11px;}
+  .hero-days-num, .hero-ytd-num{color:#16191A !important;}
+  .hero-days-label, .hero-ytd-label{color:#6B7270 !important;}
+  .hero-banner-mid{border-left:1px solid #E4E2D9 !important;border-right:1px solid #E4E2D9 !important;}
+  .hero-ytd{border-left:1px dashed #E4E2D9 !important;}
+  .hero-updated{background:#F0EFE7 !important;color:#16191A !important;font-family:'DM Mono',monospace;font-size:11px;}
+
+  .map-view-wrap, .map-picker-wrap{border-radius:2px !important;border:1px solid #E4E2D9 !important;}
+  .map-dot{border-radius:2px !important;width:18px !important;height:18px !important;margin-left:-9px !important;margin-top:-18px !important;}
+  .heat-resolved-dot{background:#1E9E5A !important;border-radius:2px !important;}
+
+  details.glass-card summary{color:#16191A !important;}
+  .kpi-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  details.glass-card summary i{color:#FFC400 !important;}
+  .spin-loading{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .gallery-card{background:#fff;border:1px solid #E4E2D9;cursor:pointer;overflow:hidden;}
+  .gallery-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#F0EFE7;overflow:hidden;}
+  .gallery-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .gallery-status-bar{height:4px;width:100%;}
+  .gallery-multi-badge{position:absolute;top:6px;right:6px;background:rgba(22,25,26,.75);color:#fff;font-family:'DM Mono',monospace;font-size:10px;padding:2px 6px;display:flex;align-items:center;gap:3px;}
+  .gallery-caption{padding:10px 12px;}
+
+  /* ============================================================
+     MOBILE RESPONSIVE — table becomes stacked cards, header/filter/modal adapt
+     ============================================================ */
+  @media (max-width: 640px) {
+    .add-finding-label{display:none;}
+    #tab-dashboard, #tab-findings, #tab-gallery{flex:1;text-align:center;padding:10px 6px !important;font-size:11px;}
+    .filter-bar-row{flex-direction:column;align-items:stretch !important;}
+    .filter-bar-row > *{width:100% !important;}
+    .modal-form-grid{grid-template-columns:1fr !important;}
+
+    .modal-overlay{padding:0 !important;align-items:flex-end !important;}
+    .modal-box{max-width:100% !important;width:100% !important;border-radius:0 !important;max-height:92vh !important;}
+
+    #mobile-fab{display:flex !important;}
+
+    .mobile-card-table thead{display:none;}
+    .mobile-card-table, .mobile-card-table tbody{display:block;width:100%;}
+    .mobile-card-table tr{display:block;background:#fff;border:1px solid #E4E2D9;border-radius:2px;margin-bottom:10px;padding:12px 14px;}
+    .mobile-card-table td{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0 !important;border-bottom:none !important;text-align:right;}
+    .mobile-card-table td[data-label]:not([data-label=""])::before{content:attr(data-label);font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#6B7270;text-align:left;flex-shrink:0;}
+    .mobile-card-table td:nth-child(2){display:block;text-align:left;padding-bottom:8px !important;border-bottom:1px solid #ECEAE0 !important;margin-bottom:6px;}
+    .mobile-card-table td:nth-child(2)::before{display:block;margin-bottom:4px;}
+    .mobile-card-table .audit-detail-cell{max-width:none !important;white-space:normal !important;}
+    .mobile-card-table td:last-child{padding-top:8px !important;border-top:1px solid #ECEAE0 !important;margin-top:4px;}
+    .mobile-card-table td:last-child > div{width:100%;justify-content:flex-end;}
+    #dash-zone-breakdown .flex.items-center.justify-between{flex-direction:column;align-items:flex-start !important;gap:4px;}
+  }
+  #mobile-fab{display:none;position:fixed;right:18px;bottom:18px;width:52px;height:52px;background:#FFC400;color:#16191A;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.22);z-index:60;border:none;cursor:pointer;}
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+
+<!-- ===== GLOBAL LOADING OVERLAY ===== -->
+<div id="global-loading-overlay">
+  <div class="global-loading-spinner"></div>
+  <div id="global-loading-text">กำลังโหลด...</div>
+</div>
+
+<!-- ===== MOBILE FAB — เพิ่ม Finding ===== -->
+<button id="mobile-fab" onclick="navigate('findings');openAuditAddModal();" title="เพิ่ม Finding" aria-label="เพิ่ม Finding">
+  <i data-lucide="plus" class="w-6 h-6"></i>
+</button>
+
+<div class="min-h-screen flex flex-col">
+
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-30 flex items-center justify-between px-5 md:px-8 py-4 flex-wrap gap-3" style="background:#fff;border-bottom:1px solid #E4E2D9;">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 flex items-center justify-center flex-shrink-0 font-display font-700" style="background:#FFC400;color:#16191A;font-size:10px;line-height:1.2;text-align:center;">DC<br/>7171</div>
+      <div>
+        <h1 class="font-700 text-lg" style="color:#16191A;">AIB &amp; Safety Audit</h1>
+        <p class="text-xs font-display" style="color:#6B7270;">NIM EXPRESS — DC7171 LAMPHUN</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex gap-1 p-1" style="background:#F0EFE7;">
+        <div class="view-toggle-btn active" id="tab-dashboard" onclick="navigate('dashboard')" style="padding:8px 16px;">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 inline align-[-2px]"></i> ภาพรวม
+        </div>
+        <div class="view-toggle-btn" id="tab-findings" onclick="navigate('findings')" style="padding:8px 16px;">
+          <i data-lucide="clipboard-list" class="w-3.5 h-3.5 inline align-[-2px]"></i> รายการ Finding
+        </div>
+        <div class="view-toggle-btn" id="tab-gallery" onclick="navigate('gallery')" style="padding:8px 16px;">
+          <i data-lucide="images" class="w-3.5 h-3.5 inline align-[-2px]"></i> คลังรูปภาพ
+        </div>
+      </div>
+      <button onclick="manualRefresh()" id="refresh-btn" class="qa-btn qa-secondary" style="width:auto;padding:9px 12px;" title="รีเฟรชข้อมูลจาก Google Sheet">
+        <i data-lucide="refresh-cw" class="w-4 h-4" id="refresh-icon"></i>
+      </button>
+      <button onclick="openLineSummaryModal()" class="qa-btn qa-secondary" style="width:auto;padding:9px 12px;" title="สรุปผลสำหรับส่งไลน์">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+      </button>
+      <button onclick="navigate('findings');openAuditAddModal();" class="qa-btn qa-primary" style="width:auto;padding:9px 16px;">
+        <i data-lucide="plus" class="w-4 h-4"></i> <span class="add-finding-label">เพิ่ม Finding</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========== PAGES ========== -->
+  <main class="flex-1 p-5 md:p-6 overflow-auto">
+
+    <!-- ===== DASHBOARD (ภาพรวม) ===== -->
+    <div class="page active" id="page-dashboard">
+
+      <div class="hero-banner mb-5">
+        <div class="hero-banner-left">
+          <div class="hero-facility">
+            <div class="hero-facility-name">NIM Express — DC7171 Lamphun</div>
+            <div class="hero-facility-sub">AIB Audit &amp; Safety Audit Tracking</div>
+          </div>
+        </div>
+        <div class="hero-banner-mid">
+          <div class="hero-days-num" id="hero-days-count">—</div>
+          <div class="hero-days-label">วันนับจากรอบตรวจล่าสุด<br/><span style="font-weight:400;opacity:.75;">(Days Since Last Audit)</span></div>
+          <div class="hero-ytd">
+            <div class="hero-ytd-num" id="hero-audit-date">—</div>
+            <div class="hero-ytd-label">รอบตรวจล่าสุด</div>
+          </div>
+        </div>
+        <div class="hero-banner-right">
+          <div class="hero-updated" id="hero-sync-status"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> กำลังเชื่อมต่อ Google Sheet...</div>
+        </div>
+      </div>
+
+      <details class="glass-card mb-5" style="padding:0;">
+        <summary class="p-4 cursor-pointer flex items-center gap-2 text-sm font-600" style="color:#16191A;list-style:none;">
+          <i data-lucide="info" class="w-4 h-4"></i> AIB Audit คืออะไร — เกณฑ์คะแนนเป็นแบบไหน
+        </summary>
+        <div class="px-4 pb-4 text-xs leading-relaxed" style="color:#4A4F4C;">
+          AIB Audit เป็นการตรวจมาตรฐานความปลอดภัยอาหารของ AIB International ที่ PepsiCo และคู่ค้าในเครือใช้ประเมินคลัง/โรงงาน
+          แบ่งเป็น 5 หมวดตรวจ หมวดละ 200 คะแนน รวมเต็ม 1,000 คะแนน — ผ่านเกณฑ์ที่ 700 คะแนนขึ้นไป, ตั้งแต่ 850 ขึ้นไปถือว่าอยู่ในระดับดีมาก
+          และ 900+ ถือเป็นมาตรฐานที่สูงมาก ระบบนี้ใช้ติดตาม "finding" หรือจุดที่ตรวจพบว่าไม่ผ่านเกณฑ์ในแต่ละรอบตรวจ เพื่อลดคะแนนที่เสียไปในรอบถัดไป
+        </div>
+      </details>
+
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        <div class="kpi-card p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-600" style="color:#6B7270;">Finding ทั้งหมด</span>
+            <div class="kpi-icon" style="background:#F0EFE7;color:#4A4F4C;"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></div>
+          </div>
+          <div class="font-display font-700 text-2xl" style="color:#16191A;" id="dash-kpi-total">—</div>
+        </div>
+        <div class="kpi-card p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-600" style="color:#6B7270;">AIB Audit</span>
+            <div class="kpi-icon" style="background:#F0EFE7;color:#16191A;"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i></div>
+          </div>
+          <div class="font-display font-700 text-2xl" style="color:#16191A;" id="dash-kpi-aib">—</div>
+        </div>
+        <div class="kpi-card p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-600" style="color:#6B7270;">Safety Audit</span>
+            <div class="kpi-icon" style="background:#F0EFE7;color:#4A4F4C;"><i data-lucide="hard-hat" class="w-3.5 h-3.5"></i></div>
+          </div>
+          <div class="font-display font-700 text-2xl" style="color:#4A4F4C;" id="dash-kpi-safety">—</div>
+        </div>
+        <div class="kpi-card p-4 wf-good" onclick="goToFindingsFiltered({status:'เสร็จแล้ว'})" style="cursor:pointer;">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-600" style="color:#6B7270;">เสร็จแล้ว</span>
+            <div class="kpi-icon" style="background:#E6F5EC;color:#1E9E5A;"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i></div>
+          </div>
+          <div class="font-display font-700 text-2xl" style="color:#1E9E5A;" id="dash-kpi-closed">—</div>
+        </div>
+        <div class="kpi-card p-4" onclick="goToFindingsFiltered({})" style="cursor:pointer;">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-600" style="color:#6B7270;">ค้างดำเนินการ</span>
+            <div class="kpi-icon" style="background:#FFF4CC;color:#B8860B;"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div>
+          </div>
+          <div class="font-display font-700 text-2xl" style="color:#B8860B;" id="dash-kpi-open">—</div>
+        </div>
+        <div class="kpi-card p-4 wf-bad">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-600" style="color:#6B7270;">เกินกำหนด</span>
+            <div class="kpi-icon" style="background:#FBE8E4;color:#D9432B;"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i></div>
+          </div>
+          <div class="font-display font-700 text-2xl" style="color:#D9432B;" id="dash-kpi-overdue">—</div>
+        </div>
+      </div>
+
+      <!-- Heatmap + Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6 items-start">
+        <div class="lg:col-span-2 glass-card p-5">
+          <div class="section-title"><i data-lucide="map-pin" class="w-3.5 h-3.5 inline align-[-2px]" style="color:#B8860B;"></i> จุดที่พบปัญหา (Heat Map) — พื้นที่คลังลำพูน DC7171</div>
+          <div class="map-view-wrap" id="dash-heatmap-wrap" style="aspect-ratio:1706/960;cursor:pointer;" onclick="navigate('findings');setAuditView('map');setAuditMapMode('heat');">
+            <img src="map-lamphun.jpg" alt="แผนที่คลังลำพูน" id="dash-heatmap-img" onload="renderDashboardHeatmap();"/>
+            <canvas id="dash-heatmap-layer" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+          </div>
+          <p class="text-xs mt-2" style="color:#6B7270;" id="dash-heatmap-note">กำลังโหลดข้อมูล...</p>
+          <button onclick="navigate('findings');setAuditView('map');setAuditMapMode('heat');" class="mt-1 text-xs font-600" style="color:#16191A;">ดูแผนที่เต็มหน้าจอ →</button>
+        </div>
+        <div class="glass-card p-5">
+          <div class="section-title"><i data-lucide="pie-chart" class="w-3.5 h-3.5 inline align-[-2px]" style="color:#B8860B;"></i> สถานะ Finding</div>
+          <canvas id="status-pie-chart" style="max-height:170px;"></canvas>
+          <div class="mt-3 space-y-1.5" id="status-pie-legend"></div>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 mb-6">
+        <div class="section-title"><i data-lucide="trending-up" class="w-3.5 h-3.5 inline align-[-2px]" style="color:#B8860B;"></i> เทรนด์การตรวจ — เทียบผลแต่ละรอบ</div>
+        <canvas id="trend-chart" style="max-height:220px;"></canvas>
+        <p class="text-xs mt-2" style="color:#6B7270;" id="trend-chart-note"></p>
+      </div>
+
+      <div class="glass-card p-5 mb-6">
+        <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+          <div class="section-title" style="margin-bottom:0;"><i data-lucide="building-2" class="w-3.5 h-3.5 inline align-[-2px]" style="color:#B8860B;"></i> Finding ตามหน่วยงาน</div>
+          <button onclick="exportAuditCSV()" class="text-xs font-600 flex items-center gap-1" style="color:#16191A;"><i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV</button>
+        </div>
+        <p class="text-xs mb-3" style="color:#6B7270;">เรียงจากหน่วยงานที่ค้างเยอะสุดก่อน · <span style="color:#B8860B;font-weight:600;">■ ค้าง</span> <span style="color:#1E9E5A;font-weight:600;">■ เสร็จแล้ว</span></p>
+        <div id="dash-zone-breakdown" class="space-y-3"></div>
+      </div>
+
+      <div class="glass-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="section-title" style="margin-bottom:0;"><i data-lucide="history" class="w-3.5 h-3.5 inline align-[-2px]" style="color:#B8860B;"></i> Finding ล่าสุด</div>
+          <button onclick="navigate('findings')" class="text-xs font-600" style="color:#16191A;">ดูทั้งหมด →</button>
+        </div>
+        <div class="space-y-3" id="dash-recent-findings"></div>
+      </div>
+    </div><!-- end dashboard page -->
+
+<!-- ===== AIB / SAFETY AUDIT PAGE ===== -->
+      <div class="page" id="page-findings">
+
+        <!-- KPI mini header -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-5">
+          <div class="kpi-card p-4">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-600" style="color:#6B7270;">Finding ทั้งหมด</span>
+              <div class="kpi-icon" style="background:#F0EFE7;color:#4A4F4C;"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></div>
+            </div>
+            <div class="font-display font-700 text-xl" style="color:#16191A;" id="audit-kpi-total">—</div>
+          </div>
+          <div class="kpi-card p-4">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-600" style="color:#6B7270;">รอดำเนินการ/ยังไม่เสร็จ</span>
+              <div class="kpi-icon" style="background:#FFF4CC;color:#B8860B;"><i data-lucide="hourglass" class="w-3.5 h-3.5"></i></div>
+            </div>
+            <div class="font-display font-700 text-xl" style="color:#4A4F4C;" id="audit-kpi-open">—</div>
+          </div>
+          <div class="kpi-card p-4 wf-good">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-600" style="color:#6B7270;">เสร็จแล้ว</span>
+              <div class="kpi-icon" style="background:#E6F5EC;color:#1E9E5A;"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i></div>
+            </div>
+            <div class="font-display font-700 text-xl" style="color:#1E9E5A;" id="audit-kpi-closed">—</div>
+          </div>
+          <div class="kpi-card p-4 wf-bad">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-600" style="color:#6B7270;">เกินกำหนด (Overdue)</span>
+              <div class="kpi-icon" style="background:#FBE8E4;color:#D9432B;"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i></div>
+            </div>
+            <div class="font-display font-700 text-xl" style="color:#D9432B;" id="audit-kpi-overdue">—</div>
+          </div>
+          <div class="kpi-card p-4">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-600" style="color:#6B7270;">% ปิด Finding</span>
+              <div class="kpi-icon" style="background:#FFF4CC;color:#B8860B;"><i data-lucide="percent" class="w-3.5 h-3.5"></i></div>
+            </div>
+            <div class="font-display font-700 text-xl" style="color:#16191A;" id="audit-kpi-rate">—</div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="glass-card p-4 mb-5">
+          <div class="flex flex-wrap items-center gap-3 filter-bar-row">
+            <div class="flex items-center gap-2 flex-1 min-w-48 px-3 py-2 rounded-2xl border border-sand-200 bg-white">
+              <i data-lucide="search" class="w-4 h-4" style="color:#6B7270;"></i>
+              <input id="audit-search" class="outline-none text-sm flex-1" placeholder="ค้นหา รายละเอียด, โซน, ผู้รับผิดชอบ..." style="font-family:'Sarabun',sans-serif;" oninput="filterAudit()"/>
+            </div>
+            <select id="audit-source-filter" class="form-input w-auto" style="padding:8px 12px;" onchange="filterAudit()">
+              <option value="">ทุกประเภทการตรวจ</option>
+              <option value="AIB">AIB Audit</option>
+              <option value="Safety Audit">Safety Audit</option>
+            </select>
+            <select id="audit-round-filter" class="form-input w-auto" style="padding:8px 12px;" onchange="filterAudit()">
+              <option value="">ทุกรอบตรวจ</option>
+            </select>
+            <select id="audit-status-filter" class="form-input w-auto" style="padding:8px 12px;" onchange="filterAudit()">
+              <option value="">ทุกสถานะ</option>
+              <option value="รอกำหนดผู้รับผิดชอบ">รอกำหนดผู้รับผิดชอบ</option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="ยังไม่เสร็จ">ยังไม่เสร็จ</option>
+              <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+            </select>
+            <button onclick="openAuditAddModal()" class="qa-btn qa-primary" style="width:auto;padding:10px 18px;">
+              <i data-lucide="plus" class="w-4 h-4"></i> เพิ่ม Finding
+            </button>
+            <button onclick="exportAuditCSV()" class="qa-btn qa-secondary" style="width:auto;padding:10px 16px;" title="Export รายการที่กรองอยู่เป็น CSV">
+              <i data-lucide="download" class="w-4 h-4"></i> Export
+            </button>
+            <div class="flex gap-1 p-1 rounded-2xl justify-center" style="background:#F0EFE7;">
+              <div class="view-toggle-btn active" id="audit-view-table-btn" onclick="setAuditView('table')">
+                <i data-lucide="table" class="w-3.5 h-3.5 inline align-[-2px]"></i> ตาราง
+              </div>
+              <div class="view-toggle-btn" id="audit-view-map-btn" onclick="setAuditView('map')">
+                <i data-lucide="map" class="w-3.5 h-3.5 inline align-[-2px]"></i> แผนที่
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div id="audit-table-view">
+          <!-- Mini Map Preview -->
+          <div class="glass-card p-3 mb-4 nm-mini-map-card" id="audit-mini-map-card" onclick="setAuditView('map')" title="ดูแผนที่เต็มจอ">
+            <div class="map-view-wrap" id="audit-mini-map-wrap" style="width:130px;height:76px;flex-shrink:0;">
+              <img src="map-lamphun.jpg" alt="แผนที่คลังลำพูน" id="audit-mini-map-img" onload="renderAuditMiniMap()"/>
+              <canvas id="audit-mini-heatmap-layer" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-700" style="color:#16191A;"><i data-lucide="map" class="w-3.5 h-3.5 inline align-[-2px]"></i> แผนที่จุดที่พบปัญหา (AIB/Safety)</div>
+              <div class="text-xs mt-0.5" style="color:#6B7270;" id="audit-mini-map-note">กำลังโหลด...</div>
+              <div class="text-xs font-600 mt-1.5" style="color:#16191A;">ดูแผนที่เต็มจอ →</div>
+            </div>
+          </div>
+          <div class="glass-card overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="data-table w-full mobile-card-table">
+              <thead>
+                <tr>
+                  <th class="text-left">#</th>
+                  <th class="text-left">เรื่อง-ปัญหา</th>
+                  <th class="text-left">โซน/ผู้รับผิดชอบ</th>
+                  <th class="text-left">ประเภท</th>
+                  <th class="text-left">สถานะ</th>
+                  <th class="text-left">กำหนดเสร็จ</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="audit-tbody"></tbody>
+            </table>
+          </div>
+          <div class="flex items-center justify-between px-5 py-4 border-t border-sand-200">
+            <span class="text-xs" style="color:#6B7270;" id="audit-count">แสดง 0 รายการ</span>
+            <div class="flex gap-2" id="audit-pagination"></div>
+          </div>
+          </div>
+        </div>
+
+        <!-- Map View -->
+        <div class="glass-card p-4" id="audit-map-view" style="display:none;">
+          <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div class="flex items-center gap-4 text-xs" style="color:#4A4F4C;" id="audit-map-legend">
+              <span><span class="map-legend-dot" style="background:#B8860B;"></span>รอกำหนดผู้รับผิดชอบ</span>
+              <span><span class="map-legend-dot" style="background:#4A4F4C;"></span>รอดำเนินการ</span>
+              <span><span class="map-legend-dot" style="background:#D9432B;"></span>ยังไม่เสร็จ</span>
+              <span><span class="map-legend-dot" style="background:#1E9E5A;"></span>เสร็จแล้ว</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex gap-1 p-1 rounded-2xl" style="background:#F0EFE7;">
+                <div class="view-toggle-btn active" id="audit-mapmode-pins-btn" onclick="setAuditMapMode('pins')" style="padding:6px 12px;">หมุด</div>
+                <div class="view-toggle-btn" id="audit-mapmode-heat-btn" onclick="setAuditMapMode('heat')" style="padding:6px 12px;">ความหนาแน่น</div>
+              </div>
+              <span class="text-xs" style="color:#6B7270;" id="audit-map-count">แสดง 0 จุดบนแผนที่</span>
+            </div>
+          </div>
+          <div class="map-view-wrap" id="audit-map-canvas">
+            <img src="map-lamphun.jpg" alt="แผนที่คลังลำพูน" id="audit-map-img" onload="if(auditMapMode==='heat') renderAuditHeatmap();"/>
+            <canvas id="audit-heatmap-layer" style="position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;"></canvas>
+          </div>
+          <p class="text-xs mt-2" style="color:#6B7270;" id="audit-map-footnote">* แสดงเฉพาะรายการที่ระบุตำแหน่งบนแผนที่ไว้ตอนบันทึก</p>
+        </div>
+      </div><!-- end audit page -->
+
+      <!-- ===== PHOTO GALLERY PAGE ===== -->
+      <div class="page" id="page-gallery">
+        <div class="glass-card p-4 mb-5">
+          <div class="flex flex-wrap items-center gap-3 filter-bar-row">
+            <div class="flex items-center gap-2 flex-1 min-w-48 px-3 py-2 rounded-2xl border border-sand-200 bg-white">
+              <i data-lucide="search" class="w-4 h-4" style="color:#6B7270;"></i>
+              <input id="gallery-search" class="outline-none text-sm flex-1" placeholder="ค้นหา รายละเอียด, โซน..." style="font-family:'Sarabun',sans-serif;" oninput="filterGallery()"/>
+            </div>
+            <select id="gallery-zone-filter" class="form-input w-auto" style="padding:8px 12px;" onchange="filterGallery()">
+              <option value="">ทุกหน่วยงาน</option>
+            </select>
+            <select id="gallery-status-filter" class="form-input w-auto" style="padding:8px 12px;" onchange="filterGallery()">
+              <option value="">ทุกสถานะ</option>
+              <option value="รอกำหนดผู้รับผิดชอบ">รอกำหนดผู้รับผิดชอบ</option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="ยังไม่เสร็จ">ยังไม่เสร็จ</option>
+              <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+            </select>
+          </div>
+        </div>
+        <p class="text-xs mb-3" style="color:#6B7270;" id="gallery-count">แสดง 0 รูป</p>
+        <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+      </div>
+
+  </main>
+</div>
+
+
+      <!-- ===== AUDIT ADD/EDIT MODAL ===== -->
+<div class="modal-overlay" id="audit-modal" style="display:none;" onclick="closeAuditModalOutside(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between p-6 border-b border-sand-200">
+      <h2 class="font-700 text-lg flex items-center gap-2" style="color:#16191A;"><i data-lucide="clipboard-edit" class="w-4 h-4" style="color:#B8860B;"></i> <span id="audit-modal-title">เพิ่ม Finding</span></h2>
+      <button onclick="closeAuditModal()" class="w-9 h-9 rounded-2xl flex items-center justify-center" style="background:#F0EFE7;color:#16191A;">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+    <form onsubmit="submitAuditFinding(event)" class="p-6 space-y-4">
+      <input type="hidden" id="af-edit-id"/>
+      <div class="grid grid-cols-2 gap-3 modal-form-grid">
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">รอบตรวจ</label>
+          <select id="af-round" class="form-input" required onchange="handleRoundSelectChange()">
+          </select>
+          <input type="hidden" id="af-date"/>
+        </div>
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">ประเภทการตรวจ</label>
+          <select id="af-source" class="form-input" required>
+            <option value="AIB">AIB Audit</option>
+            <option value="Safety Audit">Safety Audit</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">เรื่อง-ปัญหาที่พบ</label>
+        <textarea id="af-detail" class="form-input" rows="3" required placeholder="อธิบายปัญหาที่พบระหว่างตรวจ"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3 modal-form-grid">
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">โซน/ผู้รับผิดชอบ</label>
+          <input type="text" id="af-responsible" class="form-input" list="af-responsible-list" placeholder="เช่น Inbound, Outbound SO, ช่าง, Safety"/>
+          <datalist id="af-responsible-list"></datalist>
+        </div>
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">สถานะ</label>
+          <select id="af-status" class="form-input" onchange="toggleAuditActionFields()">
+            <option value="รอกำหนดผู้รับผิดชอบ">รอกำหนดผู้รับผิดชอบ</option>
+            <option value="รอดำเนินการ">รอดำเนินการ</option>
+            <option value="ยังไม่เสร็จ">ยังไม่เสร็จ</option>
+            <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+          </select>
+        </div>
+      </div>
+      <div id="af-action-taken-wrap">
+        <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">การแก้ไข (ทำไปแล้ว)</label>
+        <textarea id="af-action-taken" class="form-input" rows="2" placeholder="สิ่งที่ดำเนินการแก้ไขไปแล้ว"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3 modal-form-grid">
+        <div id="af-action-plan-wrap">
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">แผนการแก้ไข (ยังไม่ได้ทำ)</label>
+          <input type="text" id="af-action-plan" class="form-input" placeholder="แผนงาน/ผู้รับผิดชอบดำเนินการ"/>
+        </div>
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">กำหนดเสร็จ</label>
+          <input type="date" id="af-due-date" class="form-input"/>
+        </div>
+      </div>
+      <div>
+        <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">ตำแหน่งบนแผนที่ (ไม่บังคับ — คลิกบนรูปเพื่อระบุจุดที่พบปัญหา)</label>
+        <div class="map-picker-wrap" id="audit-map-picker" onclick="setAuditMapPin(event)">
+          <img src="map-lamphun.jpg" alt="แผนที่คลังลำพูน" draggable="false"/>
+          <svg class="map-pin hidden" id="audit-map-pin-marker" viewBox="0 0 24 24" fill="#16191A" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C7.6 0 4 3.6 4 8c0 5.4 7 15.4 7.3 15.8.2.3.5.4.7.4s.5-.1.7-.4C13 23.4 20 13.4 20 8c0-4.4-3.6-8-8-8z"/>
+            <circle cx="12" cy="8" r="3.2" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="flex items-center justify-between mt-1.5">
+          <span class="text-xs" style="color:#6B7270;" id="audit-map-pin-hint">ยังไม่ได้ระบุตำแหน่ง</span>
+          <button type="button" onclick="clearAuditMapPin()" class="text-xs font-600" style="color:#D9432B;">ล้างตำแหน่ง</button>
+        </div>
+        <input type="hidden" id="af-pos-x"/>
+        <input type="hidden" id="af-pos-y"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3 modal-form-grid">
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">รูปภาพปัญหา</label>
+          <div class="border-2 border-dashed rounded-2xl p-3 text-center cursor-pointer" style="border-color:#6B7270;background:#F0EFE7;" onclick="document.getElementById('af-image-finding').click()">
+            <i data-lucide="image-plus" class="w-6 h-6 mx-auto mb-1" style="color:#6B7270;"></i>
+            <p class="text-xs" style="color:#6B7270;">คลิกเพื่ออัปโหลด</p>
+            <input type="file" id="af-image-finding" accept="image/*" class="hidden" onchange="previewAuditImage(event,'finding')"/>
+          </div>
+          <div id="af-img-preview-finding" class="mt-2 hidden"></div>
+        </div>
+        <div>
+          <label class="text-sm font-600 block mb-1.5" style="color:#4A4F4C;">รูปภาพการแก้ไข</label>
+          <div class="border-2 border-dashed rounded-2xl p-3 text-center cursor-pointer" style="border-color:#6B7270;background:#F0EFE7;" onclick="document.getElementById('af-image-action').click()">
+            <i data-lucide="image-plus" class="w-6 h-6 mx-auto mb-1" style="color:#6B7270;"></i>
+            <p class="text-xs" style="color:#6B7270;">คลิกเพื่ออัปโหลด</p>
+            <input type="file" id="af-image-action" accept="image/*" class="hidden" onchange="previewAuditImage(event,'action')"/>
+          </div>
+          <div id="af-img-preview-action" class="mt-2 hidden"></div>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="closeAuditModal()" class="flex-1 py-3 rounded-2xl font-600 text-sm" style="background:#F0EFE7;color:#16191A;">ยกเลิก</button>
+        <button type="submit" id="audit-submit-btn" class="flex-1 py-3 rounded-2xl font-600 text-sm text-white" style="background:linear-gradient(135deg,#16191A,#16191A);">
+          <span id="audit-submit-text">บันทึก</span>
+          <span id="audit-submit-spinner" class="spinner hidden" style="border-top-color:#fff;border-color:rgba(255,255,255,.3);"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== AUDIT VIEW MODAL ===== -->
+<div class="modal-overlay" id="audit-view-modal" style="display:none;" onclick="closeAuditViewModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between p-6 border-b border-sand-200">
+      <h2 class="font-700 text-lg flex items-center gap-2" style="color:#16191A;"><i data-lucide="file-search" class="w-4 h-4" style="color:#B8860B;"></i> รายละเอียด Finding</h2>
+      <button onclick="closeAuditViewModal()" class="w-9 h-9 rounded-2xl flex items-center justify-center" style="background:#F0EFE7;color:#16191A;">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+    <div class="p-6" id="audit-view-content"></div>
+  </div>
+</div>
+
+<!-- ===== LINE SUMMARY MODAL ===== -->
+<div class="modal-overlay" id="line-summary-modal" style="display:none;" onclick="closeLineSummaryModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between p-6 border-b border-sand-200">
+      <h2 class="font-700 text-lg flex items-center gap-2" style="color:#16191A;"><i data-lucide="share-2" class="w-4 h-4" style="color:#B8860B;"></i> สรุปผลสำหรับส่งไลน์</h2>
+      <button onclick="closeLineSummaryModal()" class="w-9 h-9 rounded-2xl flex items-center justify-center" style="background:#F0EFE7;color:#16191A;">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+    <div class="p-6">
+      <p class="text-xs mb-2" style="color:#6B7270;">อ่านทวนก่อนคัดลอก แล้วนำไปวางในกลุ่มไลน์ได้เลย</p>
+      <textarea id="line-summary-text" readonly rows="14" class="form-input" style="font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.6;resize:vertical;"></textarea>
+      <button onclick="copyLineSummaryText()" class="qa-btn qa-primary mt-3" style="width:100%;padding:12px;">
+        <i data-lucide="copy" class="w-4 h-4"></i> คัดลอกข้อความ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function safeCreateIcons() {
+  try {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  } catch (e) {
+    console.warn('lucide icons ไม่พร้อมใช้งาน:', e.message);
+  }
+}
+
+function showToast(msg, type='info') {
+  const icons = { success:'check-circle', error:'alert-circle', info:'info' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<i data-lucide="${icons[type]||'info'}" style="width:16px;height:16px;flex-shrink:0;"></i><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  safeCreateIcons();
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(120%)'; el.style.transition='all .3s'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+
+function csvEscape_(val) {
+  if (val === null || val === undefined) return '';
+  const str = String(val);
+  return /[",\n]/.test(str) ? '"' + str.replace(/"/g, '""') + '"' : str;
+}
+
+function heatColorPalette() {
+  // สร้างตาราง gradient สี 256 ระดับ (โปร่งใส -> เหลือง -> ส้ม -> แดงเข้ม)
+  const c = document.createElement('canvas');
+  c.width = 1; c.height = 256;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0.00, 'rgba(255,255,255,0)');
+  grad.addColorStop(0.25, 'rgba(255,224,130,0.55)');
+  grad.addColorStop(0.50, 'rgba(255,167,38,0.75)');
+  grad.addColorStop(0.75, 'rgba(230,81,0,0.85)');
+  grad.addColorStop(1.00, 'rgba(192,57,43,0.95)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1, 256);
+  return ctx.getImageData(0, 0, 1, 256).data;
+}
+
+function renderHeatmapOnto(wrapId, imgId, canvasId, records) {
+  const wrap = document.getElementById(wrapId);
+  const img = document.getElementById(imgId);
+  const canvas = document.getElementById(canvasId);
+  if (!wrap || !img || !canvas) return;
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  if (!w || !h) return; // รูปยังโหลดไม่เสร็จ
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  wrap.querySelectorAll('.heat-pulse-dot').forEach(el => el.remove());
+
+  const pinned = (records || []).filter(r =>
+    r.pos_x !== undefined && r.pos_x !== '' && r.pos_x !== null &&
+    r.pos_y !== undefined && r.pos_y !== '' && r.pos_y !== null
+  );
+  if (pinned.length === 0) return;
+
+  // ขั้นที่ 1: วาดจุดสะสมความหนาแน่นแบบ grayscale-alpha ลง offscreen canvas
+  // ใช้เทคนิค shadow-blur วาดวงกลม "นอกจอ" แล้วให้เงา (shadow) ไปตกที่ตำแหน่งจริงแทน
+  const off = document.createElement('canvas');
+  off.width = w; off.height = h;
+  const octx = off.getContext('2d');
+  const radius = Math.max(26, Math.min(w, h) * 0.055);
+  octx.shadowOffsetX = w + radius * 2;
+  octx.shadowOffsetY = 0;
+  octx.shadowBlur = radius;
+  pinned.forEach(r => {
+    const cx = (parseFloat(r.pos_x) / 100) * w - (w + radius * 2);
+    const cy = (parseFloat(r.pos_y) / 100) * h;
+    octx.shadowColor = 'rgba(0,0,0,0.45)';
+    octx.beginPath();
+    octx.arc(cx, cy, radius, 0, Math.PI * 2);
+    octx.fillStyle = 'black';
+    octx.fill();
+  });
+
+  // ขั้นที่ 2: อ่านค่า alpha แต่ละพิกเซล แล้วแปลงเป็นสีตาม palette (ยิ่งซ้อนกันเยอะ = alpha สูง = สียิ่งแดง)
+  const imgData = octx.getImageData(0, 0, w, h);
+  const data = imgData.data;
+  const palette = heatColorPalette();
+  for (let i = 0; i < data.length; i += 4) {
+    const alpha = data[i + 3];
+    if (alpha === 0) continue;
+    const pi = alpha * 4;
+    data[i]     = palette[pi];
+    data[i + 1] = palette[pi + 1];
+    data[i + 2] = palette[pi + 2];
+    data[i + 3] = palette[pi + 3];
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // ขั้นที่ 3: จุดกระพริบช้าๆ ตรงตำแหน่งเคสจริง (unique ตำแหน่ง กันจุดซ้อนกันรกเกินไป)
+  const seenPositions = new Set();
+  pinned.forEach(r => {
+    const key = parseFloat(r.pos_x).toFixed(1) + ',' + parseFloat(r.pos_y).toFixed(1);
+    if (seenPositions.has(key)) return;
+    seenPositions.add(key);
+    const dot = document.createElement('div');
+    dot.className = 'heat-pulse-dot';
+    dot.style.left = parseFloat(r.pos_x) + '%';
+    dot.style.top = parseFloat(r.pos_y) + '%';
+    dot.style.animationDelay = '-' + (Math.random() * 3).toFixed(2) + 's';
+    wrap.appendChild(dot);
+  });
+}
+
+function compressImage(file, maxWidth = 1280, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round(height * (maxWidth / width));
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์รูปได้'));
+      img.src = ev.target.result;
+    };
+    reader.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์ได้'));
+    reader.readAsDataURL(file);
+  });
+}
+
+let auditData = [
+  {
+    "id": "AIB-01",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 1,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "ฝุ่นและหยากไย่สะสม บริเวณทางขึ้น สายพาน",
+    "responsible": "ช่าง",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "ทำความสะอาด",
+    "due_date": "2026-09-05",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 16.9,
+    "pos_y": 28.0,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-02",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 2,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "หยากไย่และฝุ่นสะสม บริเวณสายพาน",
+    "responsible": "ช่าง",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "ทำความสะอาด",
+    "due_date": "2026-09-05",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 16.4,
+    "pos_y": 33.1,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-03",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 3,
+    "date": "2026-08-25",
+    "zone": "",
+    "detail": "ฝุ่นสะสมมุ้งลวด  /  / พบปัญหาตั้งแต่ตรวจมา เลย์แนะนำให้เปลี่ยน วัสดุที่ติดตั้ง",
+    "responsible": "รอกำหนดผู้รับผิดชอบ",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "แกะตาข่ายเดิมที่ชำรุดออก (ถ้าเปลี่ยนใหม่ ช่องละ 500 มีอยู่ 12  ช่อง =6,000)",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-04",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 4,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "พบกล่องเปล่าวางพื้น  /  / เลย์ไม่อนุญาติให้วางกล่องเปล่า หรือกล่องสินค้า วางไว้กับพื้นต้องมีพาเลทมาใส่",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "ให้พนักงาน เเก้ไขให้เป็นทะเบียบเรียบร้อยเเละ เน้นย้ำพนักงาน",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 54.3,
+    "pos_y": 56.7,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-05",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 5,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "หยากไย่สะสม พื้นที่สูงแนวกำแพง รอบคลัง",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 55.5,
+    "pos_y": 69.7,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-06",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 6,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "หยากไย่สะสม พื้นที่สูงแนวกำแพง รอบคลัง",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-07",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 7,
+    "date": "2026-08-25",
+    "zone": "Safety",
+    "detail": "กล่องกับดักหนู วางไม่ตรงจุด",
+    "responsible": "Safety",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดระเบียบกล่องให้อยู่ตำแหน่งเดิม  - แจ้งแผนภานในทีม รปภ.  และ Bio Plus .ดำเนินการตรวจสอบแล้วให้จัดอยู่ตำแหน่งเดิม",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 50.7,
+    "pos_y": 22.5,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-08",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 8,
+    "date": "2026-08-25",
+    "zone": "",
+    "detail": "มูลนก เศษขนนก พบเจอใน Bin Location /  / ให้บล๊อค Bin Location ไปก่อนระหว่างรอแก้ไข",
+    "responsible": "ไม่มีผู้รับผิดชอบ",
+    "status": "เสร็จแล้ว",
+    "action_taken": "Block Bin Location ที่มีขี้นก และ ทำความสะอาด",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 66.6,
+    "pos_y": 43.7,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-09",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 9,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "กล่องที่จัดเก็บนาน มีฝุ่นเกาะ",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 24.8,
+    "pos_y": 64.0,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-10",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 10,
+    "date": "2026-08-25",
+    "zone": "Safety",
+    "detail": "ประตูหมายเลข 39 , 42 มีช่องว่าง  /  / แนะนำให้ปิดช่อง",
+    "responsible": "Safety",
+    "status": "รอดำเนินการ",
+    "action_taken": "ดำเนินการแก้ไขเบื้องต้นก่อน  (ถ้าไม่ได้ต้องดำเนินการให้ช่าง Sup เสนอดำเนินการ)",
+    "action_plan": "",
+    "due_date": "2026-09-04",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 50.8,
+    "pos_y": 22.5,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-11",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 11,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "ในกล่องมอเตอร์ประตูแดง มีรังนก",
+    "responsible": "ช่าง",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-12",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 12,
+    "date": "2026-08-25",
+    "zone": "Inbound",
+    "detail": "พาเลทในคลัง มีฝุ่นเกาะจำนวนมาก เนื่องจากไม่มีการทำความสะอาดก่อนใช้ /  /  / เลย์ให้กำหนดรอบการทำความสะอาดก่อนนำมาใช้งาน",
+    "responsible": "Inbound",
+    "status": "เสร็จแล้ว",
+    "action_taken": "เบื้องต้นทำการความสะอาดไปแล้วจำ นวน500พาเลทและจะทำการทำความ สะอาดก่อนนำมาใช้งาน",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "2026-08-29",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 78.6,
+    "pos_y": 28.3,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-13",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 13,
+    "date": "2026-08-25",
+    "zone": "",
+    "detail": "รังนก พื้นที่สูง ไม่สามารถเอาลงได้ สูงเกินกว่าที่จะเอาลงได้",
+    "responsible": "รอกำหนดผู้รับผิดชอบ",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-14",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 14,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "หยากไย่ ขนนก ขี้นก สะสมบริเวณด้านหน้าคลัง",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 28.6,
+    "pos_y": 66.6,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-15",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 15,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "มีรูเจาะ บริเวณโต๊ะ Outbound SO  /  / ให้ซ่อมแซมและปิดรู",
+    "responsible": "ช่าง",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 17.2,
+    "pos_y": 33.9,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-16",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 16,
+    "date": "2026-08-25",
+    "zone": "",
+    "detail": "รังนก พื้นที่สูง ไม่สามารถเอาลงได้ สูงเกินกว่าที่จะเอาลงได้",
+    "responsible": "รอกำหนดผู้รับผิดชอบ",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-17",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 17,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "หยากไย่ สะสม ตามเสาภายในคลัง",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-18",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 18,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "หยากไย่ สะสม ตามเสาภายในคลัง",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-19",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 19,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "มีเศษลูกอม ในคลัง /  / เน้นย้ำพนักงาน หาแนวทางป้องกัน และ ทำความสะอาดพื้นที่",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 41.1,
+    "pos_y": 70.9,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-20",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 20,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "มีเศษลูกอม ในคลัง /  / เน้นย้ำพนักงาน หาแนวทางป้องกัน และ ทำความสะอาดพื้นที่",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 61.4,
+    "pos_y": 73.6,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-21",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 21,
+    "date": "2026-08-25",
+    "zone": "",
+    "detail": "หยากไย่ พื้นที่สูง ไม่สามารถทำได้",
+    "responsible": "รอกำหนดผู้รับผิดชอบ",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-22",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 22,
+    "date": "2026-08-25",
+    "zone": "Safety",
+    "detail": "ประตู 9 มีช่องว่าง เสี่ยงที่มีสัตว์ แมลง เข้ามาในคลัง",
+    "responsible": "Safety",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "ซ่อมแซมจุดที่ชำรุด",
+    "due_date": "2026-09-05",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-23",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 23,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "มีสินค้า และ พาเลทเปล่า วางไว้แนวกำแพง /  / สื่อสารพนักงงานและจัดเก็บให้เรียบร้อย",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดเก็บพาเลทข้างกำเเพง",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 60.3,
+    "pos_y": 70.0,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-24",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 24,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "หยากไย่ ขนนก ขี้นก สะสมบริเวณด้านหน้าคลัง",
+    "responsible": "Outbound SO",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 31.9,
+    "pos_y": 66.1,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-25",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 25,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "มุมเสา ชำรุด",
+    "responsible": "ช่าง",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 18.6,
+    "pos_y": 30.1,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-26",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 26,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "รังนกบริเวณหน้าลานโหลด SO",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 32.4,
+    "pos_y": 69.2,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-27",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 27,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "ตู้น้ำเย็นชำรุด หลายเดือน และ มีเศษขยะใต้ที่วาง",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 25.7,
+    "pos_y": 65.0,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-28",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 28,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "มีขวดเครื่องดื่ม และ เศษขยะบนลานโหลด SO",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-29",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 29,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "มีเศษรังนก Zone SO",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 33.1,
+    "pos_y": 73.0,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-30",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 30,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "หลอดไฟ หลุด ชำรุด",
+    "responsible": "ช่าง",
+    "status": "เสร็จแล้ว",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 20.0,
+    "pos_y": 34.4,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-31",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 31,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "ก๊อกน้ำรั่ว",
+    "responsible": "ช่าง",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 15.8,
+    "pos_y": 39.0,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-32",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 32,
+    "date": "2026-08-25",
+    "zone": "Inbound",
+    "detail": "มีเศษขยะ ขวดน้ำหวาน ขนม ในถังขยะใกล้กับอาคาร",
+    "responsible": "Inbound",
+    "status": "เสร็จแล้ว",
+    "action_taken": "ทำการเปลี่ยนถุงขยะและงดทิ้งเศษอาหาร",
+    "action_plan": "",
+    "due_date": "2026-08-31",
+    "completed_date": "2026-08-31",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 80.0,
+    "pos_y": 27.9,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-33",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 33,
+    "date": "2026-08-25",
+    "zone": "Inbound",
+    "detail": "รังนก บริเวณหน้าห้องน้ำ",
+    "responsible": "Inbound",
+    "status": "รอดำเนินการ",
+    "action_taken": "จะทำการแก้ไขในวันที่3.9.68",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 80.3,
+    "pos_y": 24.4,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-34",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 34,
+    "date": "2026-08-25",
+    "zone": "Safety",
+    "detail": "พื้นถนน ชำรุด",
+    "responsible": "Safety",
+    "status": "รอดำเนินการ",
+    "action_taken": "อยู่ในขั้นตอนปรับแก้ไขราคาให้ต่ำลง",
+    "action_plan": "ให้ Sup ประเมินราคาเรียบร้อย/รอ ผจก. / ผอ.พิจรณาอนุมัติ",
+    "due_date": "รอ .ผอ. อนุมัติครับ",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 50.8,
+    "pos_y": 19.7,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-35",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 35,
+    "date": "2026-08-25",
+    "zone": "",
+    "detail": "รังนกใต้หลังคา ที่เอาลงไม่ถึง",
+    "responsible": "รอกำหนดผู้รับผิดชอบ",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-36",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 36,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "รังนก บริเวณพื้นที่ Stale",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 31.4,
+    "pos_y": 66.9,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-37",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 37,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "บริเวณทางขึ้นสายพาน มีช่องว่าง /  / ให้ปิดช่องว่าง",
+    "responsible": "ช่าง",
+    "status": "เสร็จแล้ว",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-38",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 38,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "พื้นที่ Stale มีฝุ่นสะสม",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-39",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 39,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "ทางขึ้นบรเิวณ Stale มีเศษขยะ",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงานทำความสะอาด",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-40",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 40,
+    "date": "2026-08-25",
+    "zone": "Inbound",
+    "detail": "แนวรั้วโรงอาหาร มีเศษขยะ",
+    "responsible": "Inbound",
+    "status": "รอดำเนินการ",
+    "action_taken": "จะดำเนินการให้แล้วเสร็จภายในวันที่ 4.9.68",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 81.5,
+    "pos_y": 29.6,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-41",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 41,
+    "date": "2026-08-25",
+    "zone": "Inbound",
+    "detail": "ตู้ล๊อคเกอร์มีเศษขยะ",
+    "responsible": "Inbound",
+    "status": "เสร็จแล้ว",
+    "action_taken": "ทำความสะอาดและเคลียร์ขยะทิ้งออก ทั้งหมด",
+    "action_plan": "",
+    "due_date": "2026-08-31",
+    "completed_date": "2026-08-31",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-42",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 42,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "น้ำดื่ม และ สารเคมีควรแยกการจัดเก็บ",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "เครีย สารเคมีให้ออกจากน้ำ",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": "",
+    "pos_y": "",
+    "isDemo": true
+  },
+  {
+    "id": "AIB-43",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 43,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "ถังขยะ ไม่มีฝาปิด มีเศษขยะ",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "จัดพนักงาน เเก้ไขให้เป็นทะเบียบเรียบร้อย",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 60.1,
+    "pos_y": 68.9,
+    "isDemo": true
+  },
+  {
+    "id": "AIB-44",
+    "source": "AIB",
+    "round_id": "R1",
+    "no": 44,
+    "date": "2026-08-25",
+    "zone": "Outbound STO",
+    "detail": "ที่พักสูบห้ามสูบบุหรี่ มีเศษขยะ ก้นบุหรี่ ในพื้นที่",
+    "responsible": "Outbound STO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "แก้ไขเบื้องต้นให้พนักงาน ทำความสะอาด ขยะสะสม   ส่วนต้นเหตุจะหาผู้กระทำผิด และ สื่อสารอีกครั้ง ส่วนป้ายสื่อสารยังติดครบทั้งบริเวณ",
+    "action_plan": "",
+    "due_date": "2026-08-28",
+    "completed_date": "2026-08-28",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 57.2,
+    "pos_y": 74.1,
+    "isDemo": true
+  },
+  {
+    "id": "SA-01",
+    "source": "Safety Audit",
+    "round_id": "R1",
+    "no": 1,
+    "date": "2026-08-25",
+    "zone": "Safety",
+    "detail": "ถังดับเพลิงหมดอายุ บริเวณจุดชาร์จรถโฟล์คลิฟท์",
+    "responsible": "Safety",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "ประสานงานเปลี่ยนถังใหม่",
+    "due_date": "2026-09-10",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 52,
+    "pos_y": 18,
+    "isDemo": true
+  },
+  {
+    "id": "SA-02",
+    "source": "Safety Audit",
+    "round_id": "R1",
+    "no": 2,
+    "date": "2026-08-25",
+    "zone": "Outbound SO",
+    "detail": "ทางออกฉุกเฉินประตู 12 มีของกีดขวาง",
+    "responsible": "Outbound SO",
+    "status": "เสร็จแล้ว",
+    "action_taken": "ย้ายของออกจากทางออกฉุกเฉินทันที",
+    "action_plan": "",
+    "due_date": "2026-08-30",
+    "completed_date": "2026-08-30",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 33,
+    "pos_y": 68,
+    "isDemo": true
+  },
+  {
+    "id": "SA-03",
+    "source": "Safety Audit",
+    "round_id": "R1",
+    "no": 3,
+    "date": "2026-08-25",
+    "zone": "Safety",
+    "detail": "พนักงานขับรถโฟล์คลิฟท์ไม่สวมเข็มขัดนิรภัย",
+    "responsible": "Safety",
+    "status": "รอดำเนินการ",
+    "action_taken": "เน้นย้ำในไทม์บอร์ดหน้างาน",
+    "action_plan": "ตรวจติดตามซ้ำทุกกะ",
+    "due_date": "2026-09-08",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 47,
+    "pos_y": 22,
+    "isDemo": true
+  },
+  {
+    "id": "SA-04",
+    "source": "Safety Audit",
+    "round_id": "R1",
+    "no": 4,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "ป้ายเตือนพื้นที่ชาร์จแบตเตอรี่ชำรุด อ่านไม่ออก",
+    "responsible": "ช่าง",
+    "status": "ยังไม่เสร็จ",
+    "action_taken": "",
+    "action_plan": "สั่งทำป้ายใหม่",
+    "due_date": "2026-09-12",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 16,
+    "pos_y": 32,
+    "isDemo": true
+  },
+  {
+    "id": "SA-05",
+    "source": "Safety Audit",
+    "round_id": "R1",
+    "no": 5,
+    "date": "2026-08-25",
+    "zone": "Inbound",
+    "detail": "ชุดปฐมพยาบาลจุด Inbound ของหมดอายุ/ไม่ครบ",
+    "responsible": "Inbound",
+    "status": "รอดำเนินการ",
+    "action_taken": "",
+    "action_plan": "เติมของและตรวจสอบวันหมดอายุ",
+    "due_date": "2026-09-06",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 80,
+    "pos_y": 27,
+    "isDemo": true
+  },
+  {
+    "id": "SA-06",
+    "source": "Safety Audit",
+    "round_id": "R1",
+    "no": 6,
+    "date": "2026-08-25",
+    "zone": "ช่าง",
+    "detail": "สายไฟพาดผ่านทางเดินพนักงานโซน STO",
+    "responsible": "ช่าง",
+    "status": "รอกำหนดผู้รับผิดชอบ",
+    "action_taken": "",
+    "action_plan": "",
+    "due_date": "",
+    "completed_date": "",
+    "image_url": "",
+    "action_image_url": "",
+    "pos_x": 57,
+    "pos_y": 63,
+    "isDemo": true
+  }
+];
+
+let roundsData = [
+  { id: 'R1', label: 'รอบที่ 1', date: '2026-08-25' }
+];
+
+
+// ============================================================
+// AIB / SAFETY AUDIT MODULE
+// ============================================================
+// ============================================================
+// GAS BACKEND CONNECTION — Google Apps Script + Google Sheets
+// ============================================================
+const CONFIG = {
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbyEdMqp22xX0pXB5D_kNEAHTHAu0kkj4NcGh4n0CbHnL-u5b47T5YtZtl07CLxnyXkm-A/exec',
+  API_KEY: 'aib-safety-2026-xxxx', // ต้องตรงกับ CONFIG.API_KEY ใน Code.gs
+};
+
+async function callGAS(action, params = {}) {
+  const url = new URL(CONFIG.GAS_URL);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  return res.json();
+}
+async function callGASWrite(action, data) {
+  const res = await fetch(CONFIG.GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // เลี่ยง CORS preflight
+    body: JSON.stringify({ action, apiKey: CONFIG.API_KEY, data }),
+  });
+  return res.json();
+}
+async function callGASUpload(payload) {
+  return callGASWrite('uploadImage', payload);
+}
+
+// ============================================================
+// GLOBAL LOADING OVERLAY — เบลอทั้งหน้าจอตอนกำลังเชื่อม/โหลด/บันทึกข้อมูล
+// ============================================================
+function showGlobalLoading(text) {
+  const el = document.getElementById('global-loading-overlay');
+  const textEl = document.getElementById('global-loading-text');
+  if (textEl) textEl.textContent = text || 'กำลังโหลด...';
+  if (el) el.classList.add('show');
+}
+function hideGlobalLoading() {
+  const el = document.getElementById('global-loading-overlay');
+  if (el) el.classList.remove('show');
+}
+
+async function manualRefresh() {
+  const icon = document.getElementById('refresh-icon');
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.disabled = true;
+  if (icon) icon.classList.add('spin-loading');
+  await loadFromGAS();
+  if (icon) icon.classList.remove('spin-loading');
+  if (btn) btn.disabled = false;
+}
+
+async function loadFromGAS() {
+  const statusEl = document.getElementById('hero-sync-status');
+  const setStatus = (icon, text) => { if (statusEl) statusEl.innerHTML = `<i data-lucide="${icon}" class="w-3.5 h-3.5"></i> ${text}`; safeCreateIcons(); };
+  if (!CONFIG.GAS_URL) { setStatus('alert-circle', 'โหมด Demo — ยังไม่ตั้งค่า GAS_URL'); return; }
+  showGlobalLoading('กำลังเชื่อมต่อ Google Sheet...');
+  try {
+    const res = await callGAS('getAll');
+    if (res && res.success && Array.isArray(res.rounds) && res.rounds.length > 0) {
+      roundsData = res.rounds;
+    }
+    if (res && res.success && Array.isArray(res.records) && res.records.length > 0) {
+      auditData = res.records.map(r => ({ ...r, no: Number(r.no) || 0 }));
+      auditFiltered = [...auditData];
+      populateRoundFilter();
+      renderAuditTable();
+      renderAuditMiniMap();
+      renderAuditMapView();
+      updateAuditKPIs();
+      updateDashboardKPIs();
+      renderDashboardHeatmap();
+      renderStatusPieChart();
+      renderTrendChart();
+      renderRecentFindings();
+      renderZoneBreakdown();
+      setStatus('check-circle', `เชื่อมต่อ Google Sheet แล้ว (${auditData.length} รายการ)`);
+      showToast(`โหลดข้อมูลจริง ${auditData.length} รายการจาก Google Sheet สำเร็จ`, 'success');
+    } else if (res && res.success) {
+      setStatus('check-circle', 'เชื่อมต่อ Google Sheet แล้ว — Sheet ยังไม่มีข้อมูล');
+      showToast('Google Sheet ยังไม่มีข้อมูล — แสดงข้อมูล Demo แทน', 'info');
+    } else {
+      setStatus('alert-triangle', 'เชื่อมต่อได้ แต่ Google Sheet ตอบกลับผิดพลาด — แสดง Demo แทน');
+    }
+  } catch (err) {
+    console.warn('loadFromGAS error:', err.message);
+    setStatus('alert-triangle', 'เชื่อมต่อ Google Sheet ไม่สำเร็จ — แสดงข้อมูล Demo แทน');
+    showToast('เชื่อมต่อ Google Sheet ไม่สำเร็จ — แสดงข้อมูล Demo แทน (ต้องเปิดผ่านเว็บ ไม่ใช่ไฟล์ในเครื่อง)', 'info');
+  } finally {
+    hideGlobalLoading();
+  }
+}
+
+let auditFiltered = [...auditData];
+let auditPage = 1;
+const AUDIT_PER_PAGE = 10;
+let auditMapMode = 'pins'; // 'pins' | 'heat'
+
+const AUDIT_STATUS_BADGE = {
+  'รอกำหนดผู้รับผิดชอบ': 'badge-pending',
+  'รอดำเนินการ': 'badge-open',
+  'ยังไม่เสร็จ': 'badge-critical',
+  'เสร็จแล้ว': 'badge-low',
+};
+const AUDIT_STATUS_DOT_COLOR = {
+  'รอกำหนดผู้รับผิดชอบ': '#6B7270',
+  'รอดำเนินการ': '#B8860B',
+  'ยังไม่เสร็จ': '#D9432B',
+  'เสร็จแล้ว': '#1E9E5A',
+};
+
+function auditStatusBadge(s) {
+  return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-600 ${AUDIT_STATUS_BADGE[s] || ''}">${esc(s) || '-'}</span>`;
+}
+function auditSourceBadge(s) {
+  const isAIB = s === 'AIB';
+  return `<span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-700" style="background:${isAIB ? '#F0EFE7' : '#F0EFE7'};color:${isAIB ? '#16191A' : '#4A4F4C'};">${esc(s)}</span>`;
+}
+function fmtDateOnly(d) {
+  if (!d) return '-';
+  const dt = new Date(d);
+  if (isNaN(dt)) return '-';
+  return dt.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' });
+}
+function auditIsOverdue(r) {
+  if (r.status === 'เสร็จแล้ว' || !r.due_date) return false;
+  const due = new Date(r.due_date);
+  if (isNaN(due)) return false;
+  return due < new Date(new Date().toDateString());
+}
+
+// ------------------------------------------------------------
+// FILTER / TABLE
+// ------------------------------------------------------------
+function populateRoundFilter() {
+  const el = document.getElementById('audit-round-filter');
+  if (!el) return;
+  const current = el.value;
+  const counts = {};
+  auditData.forEach(r => { if (r.round_id) counts[r.round_id] = (counts[r.round_id] || 0) + 1; });
+  const sorted = [...roundsData].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  el.innerHTML = '<option value="">ทุกรอบตรวจ</option>' + sorted.map(r => `<option value="${r.id}">${esc(r.label)} (${counts[r.id] || 0} รายการ)</option>`).join('');
+  el.value = current;
+}
+
+function filterAudit() {
+  const qEl = document.getElementById('audit-search');
+  const sourceEl = document.getElementById('audit-source-filter');
+  const statusEl = document.getElementById('audit-status-filter');
+  const roundEl = document.getElementById('audit-round-filter');
+  const q = qEl ? qEl.value.toLowerCase() : '';
+  const source = sourceEl ? sourceEl.value : '';
+  const status = statusEl ? statusEl.value : '';
+  const round = roundEl ? roundEl.value : '';
+  auditFiltered = auditData.filter(r =>
+    (!q || (r.detail || '').toLowerCase().includes(q) || (r.zone || '').toLowerCase().includes(q) || (r.responsible || '').toLowerCase().includes(q)) &&
+    (!source || r.source === source) &&
+    (!status || r.status === status) &&
+    (!round || r.round_id === round)
+  );
+  auditPage = 1;
+  renderAuditTable();
+  renderAuditMapView();
+  renderAuditMiniMap();
+  updateAuditKPIs();
+}
+
+function renderAuditTable() {
+  const tbody = document.getElementById('audit-tbody');
+  if (!tbody) return;
+  const start = (auditPage - 1) * AUDIT_PER_PAGE;
+  const slice = auditFiltered.slice(start, start + AUDIT_PER_PAGE);
+  tbody.innerHTML = slice.length === 0 ? `<tr><td colspan="7" class="text-center py-12" style="color:#6B7270;">ไม่พบข้อมูล</td></tr>` :
+    slice.map(r => `
+    <tr>
+      <td class="text-xs" data-label="#" style="color:#6B7270;">${esc(r.no || '')}</td>
+      <td data-label="เรื่อง-ปัญหา">
+        <div class="text-sm font-500 audit-detail-cell" style="color:#16191A;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(r.detail)}</div>
+        <div class="text-xs mt-0.5" style="color:#6B7270;">${fmtDateOnly(r.date)}</div>
+      </td>
+      <td class="text-sm" data-label="โซน/ผู้รับผิดชอบ" style="color:#4A4F4C;">${esc(r.zone || r.responsible || '-')}</td>
+      <td data-label="ประเภท">${auditSourceBadge(r.source)}</td>
+      <td data-label="สถานะ">${auditStatusBadge(r.status)}</td>
+      <td class="text-xs font-600" data-label="กำหนดเสร็จ" style="color:${auditIsOverdue(r) ? '#D9432B' : '#4A4F4C'};">${fmtDateOnly(r.due_date)}${auditIsOverdue(r) ? ' ⚠' : ''}</td>
+      <td class="text-center" data-label="">
+        <div class="flex items-center justify-center gap-1">
+          <button onclick="viewAuditFinding('${r.id}')" class="p-2 rounded-lg hover:bg-blue-50" title="ดูรายละเอียด"><i data-lucide="eye" class="w-4 h-4" style="color:#4A4F4C;"></i></button>
+          <button onclick="editAuditFinding('${r.id}')" class="p-2 rounded-lg hover:bg-orange-50" title="แก้ไข"><i data-lucide="pencil" class="w-4 h-4" style="color:#B8860B;"></i></button>
+          <button onclick="deleteAuditFinding('${r.id}')" class="p-2 rounded-lg hover:bg-red-50" title="ลบ"><i data-lucide="trash-2" class="w-4 h-4" style="color:#D9432B;"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('audit-count').textContent = `แสดง ${slice.length ? start + 1 : 0}–${Math.min(start + AUDIT_PER_PAGE, auditFiltered.length)} จาก ${auditFiltered.length} รายการ`;
+  renderAuditPagination();
+  safeCreateIcons();
+}
+
+function renderAuditPagination() {
+  const pages = Math.ceil(auditFiltered.length / AUDIT_PER_PAGE);
+  const container = document.getElementById('audit-pagination');
+  if (!container) return;
+  if (pages <= 1) { container.innerHTML = ''; return; }
+  let html = '';
+  for (let i = 1; i <= pages; i++) {
+    html += `<button onclick="goAuditPage(${i})" class="w-8 h-8 rounded-xl text-xs font-600" style="${i === auditPage ? 'background:#16191A;color:#fff;' : 'background:#F0EFE7;color:#16191A;'}">${i}</button>`;
+  }
+  container.innerHTML = html;
+}
+function goAuditPage(p) { auditPage = p; renderAuditTable(); }
+
+// ------------------------------------------------------------
+// KPI HEADER
+// ------------------------------------------------------------
+function updateAuditKPIs() {
+  const total = auditFiltered.length;
+  const closed = auditFiltered.filter(r => r.status === 'เสร็จแล้ว').length;
+  const open = total - closed;
+  const overdue = auditFiltered.filter(auditIsOverdue).length;
+  const rate = total ? Math.round((closed / total) * 100) : 0;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('audit-kpi-total', total);
+  set('audit-kpi-open', open);
+  set('audit-kpi-closed', closed);
+  set('audit-kpi-overdue', overdue);
+  set('audit-kpi-rate', rate + '%');
+}
+
+// ------------------------------------------------------------
+// TABLE / MAP VIEW TOGGLE
+// ------------------------------------------------------------
+function setAuditView(mode) {
+  const tableView = document.getElementById('audit-table-view');
+  const mapView = document.getElementById('audit-map-view');
+  const tableBtn = document.getElementById('audit-view-table-btn');
+  const mapBtn = document.getElementById('audit-view-map-btn');
+  if (mode === 'map') {
+    tableView.style.display = 'none';
+    mapView.style.display = 'block';
+    tableBtn.classList.remove('active');
+    mapBtn.classList.add('active');
+    renderAuditMapView();
+  } else {
+    tableView.style.display = 'block';
+    mapView.style.display = 'none';
+    mapBtn.classList.remove('active');
+    tableBtn.classList.add('active');
+    renderAuditMiniMap();
+  }
+}
+
+function setAuditMapMode(mode) {
+  auditMapMode = mode;
+  document.getElementById('audit-mapmode-pins-btn').classList.toggle('active', mode === 'pins');
+  document.getElementById('audit-mapmode-heat-btn').classList.toggle('active', mode === 'heat');
+  document.getElementById('audit-map-legend').style.display = mode === 'pins' ? 'flex' : 'none';
+  document.getElementById('audit-map-footnote').textContent = mode === 'heat'
+    ? '* สีเข้ม = ปัญหาที่ยังไม่แก้ไขสะสม/ซ้ำหลายครั้ง · จุดเขียว = แก้ไขแล้ว'
+    : '* แสดงเฉพาะรายการที่ระบุตำแหน่งบนแผนที่ไว้ตอนบันทึก';
+  renderAuditMapView();
+}
+
+function getAuditPinnedRecords() {
+  return auditFiltered.filter(r =>
+    r.pos_x !== undefined && r.pos_x !== '' && r.pos_x !== null &&
+    r.pos_y !== undefined && r.pos_y !== '' && r.pos_y !== null
+  );
+}
+
+// จุดที่ "เสร็จแล้ว" ให้ขึ้นเป็นวงเขียวนิ่งๆ แยกจากความร้อน (heat) ของปัญหาที่ยังค้างอยู่
+function renderResolvedOverlay(wrapId, records) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  wrap.querySelectorAll('.heat-resolved-dot').forEach(el => el.remove());
+  (records || []).filter(r => r.status === 'เสร็จแล้ว').forEach(r => {
+    const dot = document.createElement('div');
+    dot.className = 'heat-resolved-dot';
+    dot.style.left = parseFloat(r.pos_x) + '%';
+    dot.style.top = parseFloat(r.pos_y) + '%';
+    dot.title = `${r.detail} (แก้ไขแล้ว)`;
+    wrap.appendChild(dot);
+  });
+}
+
+function renderAuditMapView() {
+  const canvas = document.getElementById('audit-map-canvas');
+  if (!canvas) return;
+  const pinned = getAuditPinnedRecords();
+  const countEl = document.getElementById('audit-map-count');
+  if (countEl) countEl.textContent = `แสดง ${pinned.length} จุดบนแผนที่ (จากทั้งหมด ${auditFiltered.length} รายการที่กรองไว้)`;
+
+  const heatCanvas = document.getElementById('audit-heatmap-layer');
+  canvas.querySelectorAll('.map-dot').forEach(el => el.remove());
+
+  if (auditMapMode === 'heat') {
+    heatCanvas.style.display = 'block';
+    renderAuditHeatmap();
+  } else {
+    heatCanvas.style.display = 'none';
+    canvas.querySelectorAll('.heat-pulse-dot').forEach(el => el.remove());
+    pinned.forEach(r => {
+      const dot = document.createElement('div');
+      dot.className = 'map-dot';
+      dot.style.left = parseFloat(r.pos_x) + '%';
+      dot.style.top = parseFloat(r.pos_y) + '%';
+      dot.style.background = AUDIT_STATUS_DOT_COLOR[r.status] || '#16191A';
+      dot.title = `${r.detail} (${r.status})`;
+      dot.onclick = () => viewAuditFinding(r.id);
+      canvas.appendChild(dot);
+    });
+  }
+}
+
+function renderAuditHeatmap() {
+  const pinned = getAuditPinnedRecords();
+  renderHeatmapOnto('audit-map-canvas', 'audit-map-img', 'audit-heatmap-layer', pinned.filter(r => r.status !== 'เสร็จแล้ว'));
+  renderResolvedOverlay('audit-map-canvas', pinned);
+}
+
+function renderAuditMiniMap() {
+  renderHeatmapOnto('audit-mini-map-wrap', 'audit-mini-map-img', 'audit-mini-heatmap-layer', auditFiltered.filter(r => r.status !== 'เสร็จแล้ว'));
+  renderResolvedOverlay('audit-mini-map-wrap', getAuditPinnedRecords());
+  const pinned = getAuditPinnedRecords();
+  const note = document.getElementById('audit-mini-map-note');
+  if (note) {
+    note.textContent = pinned.length > 0
+      ? `${pinned.length} จุดจาก ${auditFiltered.length} รายการที่กรองไว้ · จุดเขียว = แก้ไขแล้ว`
+      : 'ยังไม่มี Finding ที่ระบุตำแหน่งไว้';
+  }
+}
+
+// ------------------------------------------------------------
+// MAP PIN PICKER (Add/Edit modal)
+// ------------------------------------------------------------
+function setAuditMapPin(e) {
+  const wrap = document.getElementById('audit-map-picker');
+  const rect = wrap.getBoundingClientRect();
+  const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+  const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+  placeAuditMapPin(xPct, yPct);
+}
+function placeAuditMapPin(xPct, yPct) {
+  const marker = document.getElementById('audit-map-pin-marker');
+  marker.style.left = xPct + '%';
+  marker.style.top = yPct + '%';
+  marker.classList.remove('hidden');
+  document.getElementById('af-pos-x').value = xPct.toFixed(2);
+  document.getElementById('af-pos-y').value = yPct.toFixed(2);
+  document.getElementById('audit-map-pin-hint').textContent = `ระบุตำแหน่งแล้ว (${xPct.toFixed(0)}%, ${yPct.toFixed(0)}%)`;
+}
+function clearAuditMapPin() {
+  document.getElementById('audit-map-pin-marker').classList.add('hidden');
+  document.getElementById('af-pos-x').value = '';
+  document.getElementById('af-pos-y').value = '';
+  const hint = document.getElementById('audit-map-pin-hint');
+  if (hint) hint.textContent = 'ยังไม่ได้ระบุตำแหน่ง';
+}
+
+// ------------------------------------------------------------
+// IMAGE UPLOAD (finding photo / correction photo) — demo mode: base64 data URL
+// ------------------------------------------------------------
+let auditImgData = { finding: '', action: '' };
+async function previewAuditImage(e, kind) {
+  const file = (e.target.files || [])[0];
+  e.target.value = '';
+  if (!file) return;
+  if (file.size > 8 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกินไป (จำกัด 8MB)', 'error'); return; }
+  try {
+    const dataUrl = await compressImage(file);
+    auditImgData[kind] = dataUrl;
+    renderAuditImagePreview(kind);
+  } catch (err) {
+    showToast(err.message || 'ไม่สามารถอ่านไฟล์รูปได้', 'error');
+  }
+}
+function renderAuditImagePreview(kind) {
+  const container = document.getElementById(kind === 'finding' ? 'af-img-preview-finding' : 'af-img-preview-action');
+  const url = auditImgData[kind];
+  if (!url) { container.innerHTML = ''; container.classList.add('hidden'); return; }
+  container.classList.remove('hidden');
+  container.innerHTML = `<div class="relative inline-block"><img src="${url}" class="w-full h-20 object-cover rounded-xl"/><button type="button" onclick="clearAuditImage('${kind}')" class="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center" style="background:#D9432B;color:#fff;"><i data-lucide="x" class="w-3 h-3"></i></button></div>`;
+  safeCreateIcons();
+}
+function clearAuditImage(kind) {
+  auditImgData[kind] = '';
+  renderAuditImagePreview(kind);
+}
+
+// ------------------------------------------------------------
+// ADD / EDIT / DELETE
+// ------------------------------------------------------------
+function populateAuditResponsibleDropdown() {
+  const list = document.getElementById('af-responsible-list');
+  if (!list) return;
+  const zones = [...new Set(auditData.map(r => r.zone || r.responsible).filter(Boolean))];
+  list.innerHTML = zones.map(z => `<option value="${esc(z)}"></option>`).join('');
+}
+
+// รอบตรวจ — dropdown ในฟอร์ม พร้อมตัวเลือก "+ เริ่มรอบตรวจใหม่" ท้ายสุด
+function populateAuditRoundOptions(selectedId) {
+  const sel = document.getElementById('af-round');
+  if (!sel) return;
+  const sorted = [...roundsData].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  sel.innerHTML = sorted.map(r => `<option value="${r.id}">${esc(r.label)} (${fmtDateOnly(r.date)})</option>`).join('')
+    + '<option value="__new__">+ เริ่มรอบตรวจใหม่...</option>';
+  const target = selectedId || (sorted[0] ? sorted[0].id : '');
+  if (target) sel.value = target;
+  syncAfDateFromRound();
+}
+function syncAfDateFromRound() {
+  const sel = document.getElementById('af-round');
+  const round = roundsData.find(r => r.id === sel.value);
+  document.getElementById('af-date').value = round ? round.date : '';
+}
+async function handleRoundSelectChange() {
+  const sel = document.getElementById('af-round');
+  if (sel.value !== '__new__') { syncAfDateFromRound(); return; }
+  const label = prompt('ชื่อรอบตรวจใหม่ เช่น "รอบที่ 2"', `รอบที่ ${roundsData.length + 1}`);
+  if (!label) { populateAuditRoundOptions(); return; }
+  const date = prompt('วันที่ตรวจของรอบนี้ (YYYY-MM-DD)', new Date().toISOString().slice(0, 10));
+  if (!date) { populateAuditRoundOptions(); return; }
+  const newRound = { id: 'R' + Date.now(), label, date };
+  if (CONFIG.GAS_URL) {
+    try {
+      const res = await callGASWrite('addRound', newRound);
+      if (res && res.success && res.id) newRound.id = res.id;
+      else showToast('บันทึกรอบตรวจไป Google Sheet ไม่สำเร็จ (ใช้ได้ชั่วคราวในเครื่องนี้)', 'error');
+    } catch (err) {
+      showToast('บันทึกรอบตรวจไป Google Sheet ไม่สำเร็จ (ใช้ได้ชั่วคราวในเครื่องนี้)', 'error');
+    }
+  }
+  roundsData.push(newRound);
+  populateAuditRoundOptions(newRound.id);
+  showToast(`สร้างรอบตรวจ "${label}" แล้ว`, 'success');
+}
+
+// โชว์แค่ช่องที่เกี่ยวข้องตามสถานะ — "เสร็จแล้ว" โชว์ช่อง "การแก้ไข", สถานะอื่นโชว์ช่อง "แผนการแก้ไข"
+function toggleAuditActionFields() {
+  const isDone = document.getElementById('af-status').value === 'เสร็จแล้ว';
+  document.getElementById('af-action-taken-wrap').classList.toggle('hidden', !isDone);
+  document.getElementById('af-action-plan-wrap').classList.toggle('hidden', isDone);
+}
+
+function openAuditAddModal() {
+  document.getElementById('audit-modal-title').textContent = 'เพิ่ม Finding';
+  document.getElementById('af-edit-id').value = '';
+  populateAuditRoundOptions();
+  document.getElementById('af-source').value = 'AIB';
+  document.getElementById('af-detail').value = '';
+  document.getElementById('af-responsible').value = '';
+  document.getElementById('af-status').value = 'รอกำหนดผู้รับผิดชอบ';
+  document.getElementById('af-action-taken').value = '';
+  document.getElementById('af-action-plan').value = '';
+  document.getElementById('af-due-date').value = '';
+  toggleAuditActionFields();
+  clearAuditMapPin();
+  auditImgData = { finding: '', action: '' };
+  renderAuditImagePreview('finding');
+  renderAuditImagePreview('action');
+  populateAuditResponsibleDropdown();
+  document.getElementById('audit-modal').style.display = 'flex';
+  safeCreateIcons();
+}
+
+function editAuditFinding(id) {
+  const r = auditData.find(x => String(x.id) === String(id));
+  if (!r) return;
+  document.getElementById('audit-modal-title').textContent = 'แก้ไข Finding';
+  document.getElementById('af-edit-id').value = id;
+  populateAuditRoundOptions(r.round_id);
+  document.getElementById('af-source').value = r.source || 'AIB';
+  document.getElementById('af-detail').value = r.detail || '';
+  document.getElementById('af-responsible').value = r.zone || r.responsible || '';
+  document.getElementById('af-status').value = r.status || 'รอกำหนดผู้รับผิดชอบ';
+  document.getElementById('af-action-taken').value = r.action_taken || '';
+  document.getElementById('af-action-plan').value = r.action_plan || '';
+  document.getElementById('af-due-date').value = r.due_date || '';
+  toggleAuditActionFields();
+  clearAuditMapPin();
+  if (r.pos_x !== undefined && r.pos_x !== '' && r.pos_x !== null &&
+      r.pos_y !== undefined && r.pos_y !== '' && r.pos_y !== null) {
+    placeAuditMapPin(parseFloat(r.pos_x), parseFloat(r.pos_y));
+  }
+  auditImgData = { finding: r.image_url || '', action: r.action_image_url || '' };
+  renderAuditImagePreview('finding');
+  renderAuditImagePreview('action');
+  populateAuditResponsibleDropdown();
+  document.getElementById('audit-modal').style.display = 'flex';
+  safeCreateIcons();
+}
+
+function closeAuditModal() { document.getElementById('audit-modal').style.display = 'none'; }
+function closeAuditModalOutside(e) { if (e.target === document.getElementById('audit-modal')) closeAuditModal(); }
+
+async function uploadPendingAuditImageIfNeeded(kind) {
+  const val = auditImgData[kind];
+  if (!val || !val.startsWith('data:')) return val || ''; // ว่างหรือเป็น URL เดิมอยู่แล้ว ไม่ต้องอัปโหลดซ้ำ
+  if (!CONFIG.GAS_URL) return val; // Demo mode ไม่มี GAS — เก็บเป็น base64 ไว้ก่อน
+  const [meta, base64] = val.split(',');
+  const mimeMatch = /data:(.*?);base64/.exec(meta || '');
+  const mimetype = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+  const filename = `aib_${kind}_${Date.now()}.jpg`;
+  const res = await callGASUpload({ data: base64, mimetype, filename });
+  return (res && res.success) ? res.url : val;
+}
+
+async function submitAuditFinding(e) {
+  e.preventDefault();
+  const editId = document.getElementById('af-edit-id').value;
+  document.getElementById('audit-submit-text').classList.add('hidden');
+  document.getElementById('audit-submit-spinner').classList.remove('hidden');
+  showGlobalLoading('กำลังบันทึกข้อมูล...');
+  try {
+    const responsible = document.getElementById('af-responsible').value;
+    showGlobalLoading('กำลังอัปโหลดรูปภาพ...');
+    const findingImageUrl = await uploadPendingAuditImageIfNeeded('finding');
+    const actionImageUrl = await uploadPendingAuditImageIfNeeded('action');
+    showGlobalLoading('กำลังบันทึกข้อมูล...');
+    const data = {
+      no: editId ? (auditData.find(x => String(x.id) === String(editId)) || {}).no : (Math.max(0, ...auditData.map(r => r.no || 0)) + 1),
+      source: document.getElementById('af-source').value,
+      round_id: document.getElementById('af-round').value,
+      date: document.getElementById('af-date').value,
+      zone: responsible,
+      responsible: responsible,
+      detail: document.getElementById('af-detail').value,
+      status: document.getElementById('af-status').value,
+      action_taken: document.getElementById('af-action-taken').value,
+      action_plan: document.getElementById('af-action-plan').value,
+      due_date: document.getElementById('af-due-date').value,
+      completed_date: document.getElementById('af-status').value === 'เสร็จแล้ว' ? new Date().toISOString().slice(0, 10) : '',
+      image_url: findingImageUrl,
+      action_image_url: actionImageUrl,
+      pos_x: document.getElementById('af-pos-x').value,
+      pos_y: document.getElementById('af-pos-y').value,
+    };
+
+    if (CONFIG.GAS_URL) {
+      if (editId) {
+        await callGASWrite('update', { ...data, id: editId });
+        const idx = auditData.findIndex(x => String(x.id) === String(editId));
+        if (idx > -1) auditData[idx] = { ...auditData[idx], ...data };
+      } else {
+        const gasResult = await callGASWrite('add', data);
+        if (!gasResult || !gasResult.success) throw new Error(gasResult && gasResult.error || 'บันทึกไป Google Sheet ไม่สำเร็จ');
+        auditData.unshift({ ...data, id: gasResult.id });
+      }
+    } else {
+      // Demo mode (ไม่มี GAS_URL) — เก็บในหน่วยความจำหน้าเว็บเท่านั้น
+      await new Promise(r => setTimeout(r, 400));
+      const id = editId || ('AUD-' + Date.now());
+      if (editId) {
+        const idx = auditData.findIndex(x => String(x.id) === String(editId));
+        if (idx > -1) auditData[idx] = { ...auditData[idx], ...data, id };
+      } else {
+        auditData.unshift({ ...data, id });
+      }
+    }
+
+    closeAuditModal();
+    filterAudit();
+    showToast(editId ? 'อัปเดต Finding สำเร็จ' : 'เพิ่ม Finding สำเร็จ', 'success');
+  } catch (err) {
+    showToast(err.message || 'เกิดข้อผิดพลาด: ไม่สามารถบันทึกข้อมูล', 'error');
+  } finally {
+    document.getElementById('audit-submit-text').classList.remove('hidden');
+    document.getElementById('audit-submit-spinner').classList.add('hidden');
+    hideGlobalLoading();
+  }
+}
+
+async function deleteAuditFinding(id) {
+  if (!confirm('ยืนยันการลบ Finding นี้?')) return;
+  if (CONFIG.GAS_URL) {
+    showGlobalLoading('กำลังลบข้อมูล...');
+    try {
+      const res = await callGASWrite('delete', { id });
+      if (!res || !res.success) throw new Error(res && res.error || 'ลบไม่สำเร็จ');
+    } catch (err) {
+      showToast(err.message || 'ลบไม่สำเร็จ', 'error');
+      hideGlobalLoading();
+      return;
+    }
+    hideGlobalLoading();
+  }
+  auditData = auditData.filter(x => String(x.id) !== String(id));
+  filterAudit();
+  showToast('ลบ Finding สำเร็จ', 'success');
+}
+
+// ------------------------------------------------------------
+// VIEW MODAL
+// ------------------------------------------------------------
+function viewAuditFinding(id) {
+  const r = auditData.find(x => String(x.id) === String(id));
+  if (!r) return;
+  document.getElementById('audit-view-content').innerHTML = `
+    <div class="flex gap-2 mb-4 flex-wrap items-center">${auditSourceBadge(r.source)} ${auditStatusBadge(r.status)} <span class="text-xs font-600" style="color:#6B7270;">${esc((roundsData.find(x => x.id === r.round_id) || {}).label || '')}</span></div>
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div><div class="text-xs font-600 mb-1" style="color:#6B7270;">วันที่ตรวจ</div><div class="text-sm font-600" style="color:#16191A;">${fmtDateOnly(r.date)}</div></div>
+      <div><div class="text-xs font-600 mb-1" style="color:#6B7270;">โซน/ผู้รับผิดชอบ</div><div class="text-sm font-600" style="color:#16191A;">${esc(r.zone || r.responsible) || '-'}</div></div>
+    </div>
+    <div class="mb-4"><div class="text-xs font-600 mb-1" style="color:#6B7270;">เรื่อง-ปัญหาที่พบ</div><div class="text-sm p-3 rounded-2xl" style="background:#F0EFE7;color:#16191A;">${esc(r.detail)}</div></div>
+    ${r.action_taken ? `<div class="mb-4"><div class="text-xs font-600 mb-1" style="color:#6B7270;">การแก้ไข</div><div class="text-sm p-3 rounded-2xl" style="background:#E6F5EC;color:#16191A;">${esc(r.action_taken)}</div></div>` : ''}
+    ${r.action_plan ? `<div class="mb-4"><div class="text-xs font-600 mb-1" style="color:#6B7270;">แผนการแก้ไข</div><div class="text-sm p-3 rounded-2xl" style="background:#FFF8F0;color:#16191A;">${esc(r.action_plan)}</div></div>` : ''}
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div><div class="text-xs font-600 mb-1" style="color:#6B7270;">กำหนดเสร็จ</div><div class="text-sm font-600" style="color:${auditIsOverdue(r) ? '#D9432B' : '#16191A'};">${fmtDateOnly(r.due_date)}${auditIsOverdue(r) ? ' (เกินกำหนด)' : ''}</div></div>
+      <div><div class="text-xs font-600 mb-1" style="color:#6B7270;">วันที่ปิดงาน</div><div class="text-sm font-600" style="color:#16191A;">${fmtDateOnly(r.completed_date)}</div></div>
+    </div>
+    ${(r.pos_x !== undefined && r.pos_x !== '' && r.pos_x !== null && r.pos_y !== undefined && r.pos_y !== '' && r.pos_y !== null) ? `
+    <div class="mb-4">
+      <div class="text-xs font-600 mb-1" style="color:#6B7270;">ตำแหน่งบนแผนที่</div>
+      <div class="map-view-wrap" style="max-width:320px;margin:0 auto;">
+        <img src="map-lamphun.jpg" alt="แผนที่คลังลำพูน"/>
+        <div class="map-dot" style="left:${parseFloat(r.pos_x)}%;top:${parseFloat(r.pos_y)}%;background:${AUDIT_STATUS_DOT_COLOR[r.status] || '#16191A'};cursor:default;"></div>
+      </div>
+    </div>` : ''}
+    <div class="grid grid-cols-2 gap-3 modal-form-grid">
+      ${r.image_url ? `<div><div class="text-xs font-600 mb-1" style="color:#6B7270;">รูปภาพปัญหา</div><img src="${r.image_url}" class="w-full max-h-48 object-cover rounded-2xl"/></div>` : ''}
+      ${r.action_image_url ? `<div><div class="text-xs font-600 mb-1" style="color:#6B7270;">รูปภาพการแก้ไข</div><img src="${r.action_image_url}" class="w-full max-h-48 object-cover rounded-2xl"/></div>` : ''}
+    </div>
+    <div class="flex gap-3 pt-4">
+      <button onclick="closeAuditViewModal();editAuditFinding('${r.id}')" class="flex-1 py-2.5 rounded-2xl font-600 text-sm" style="background:#F0EFE7;color:#16191A;">แก้ไขรายการนี้</button>
+    </div>
+  `;
+  document.getElementById('audit-view-modal').style.display = 'flex';
+  safeCreateIcons();
+}
+function closeAuditViewModal() { document.getElementById('audit-view-modal').style.display = 'none'; }
+
+// ------------------------------------------------------------
+// EXPORT CSV
+// ------------------------------------------------------------
+function exportAuditCSV() {
+  if (!auditFiltered.length) { showToast('ไม่มีข้อมูลให้ Export', 'error'); return; }
+  const headers = ['ID', 'ลำดับ', 'ประเภทการตรวจ', 'วันที่ตรวจ', 'เรื่อง-ปัญหา', 'โซน/ผู้รับผิดชอบ', 'สถานะ', 'การแก้ไข', 'แผนการแก้ไข', 'กำหนดเสร็จ', 'วันที่ปิดงาน'];
+  const rows = auditFiltered.map(r => [r.id, r.no, r.source, r.date, r.detail, (r.zone || r.responsible), r.status, r.action_taken, r.action_plan, r.due_date, r.completed_date]);
+  const csvLines = [headers, ...rows].map(row => row.map(csvEscape_).join(','));
+  const csvContent = '\uFEFF' + csvLines.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `aib_safety_audit_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Export ${auditFiltered.length} รายการสำเร็จ`, 'success');
+}
+
+// ============================================================
+// LINE SUMMARY — สร้างข้อความสรุปแบบอ่านง่าย คัดลอกไปวางในกลุ่มไลน์ได้
+// ============================================================
+function buildLineSummaryText() {
+  const total = auditData.length;
+  const aib = auditData.filter(r => r.source === 'AIB').length;
+  const safety = auditData.filter(r => r.source === 'Safety Audit').length;
+  const closed = auditData.filter(r => r.status === 'เสร็จแล้ว').length;
+  const open = total - closed;
+  const overdue = auditData.filter(auditIsOverdue).length;
+  const rate = total ? Math.round((closed / total) * 100) : 0;
+
+  const byZone = {};
+  auditData.forEach(r => {
+    const z = r.zone || r.responsible || 'ไม่ระบุหน่วยงาน';
+    if (!byZone[z]) byZone[z] = { total: 0, open: 0 };
+    byZone[z].total++;
+    if (r.status !== 'เสร็จแล้ว') byZone[z].open++;
+  });
+  const topZones = Object.entries(byZone)
+    .filter(([, s]) => s.open > 0)
+    .sort((a, b) => b[1].open - a[1].open)
+    .slice(0, 5);
+
+  const dateCounts = {};
+  auditData.forEach(r => { if (r.date) { const d = String(r.date).slice(0, 10); dateCounts[d] = (dateCounts[d] || 0) + 1; } });
+  const dEntries = Object.entries(dateCounts);
+  const auditDate = dEntries.length ? dEntries.sort((a, b) => b[1] - a[1])[0][0] : '';
+
+  const lines = [];
+  lines.push('สรุปผล AIB & Safety Audit — คลังลำพูน DC7171');
+  lines.push(`รอบตรวจ: ${fmtDateOnly(auditDate)}`);
+  lines.push('');
+  lines.push(`Finding ทั้งหมด: ${total} รายการ (AIB ${aib} / Safety Audit ${safety})`);
+  lines.push(`แก้ไขแล้ว: ${closed} (${rate}%)`);
+  lines.push(`ค้างดำเนินการ: ${open}`);
+  lines.push(`เกินกำหนด: ${overdue}`);
+  if (topZones.length) {
+    lines.push('');
+    lines.push('หน่วยงานที่ต้องติดตาม:');
+    topZones.forEach(([zone, s], i) => {
+      lines.push(`${i + 1}. ${zone} — ค้าง ${s.open} จาก ${s.total} เรื่อง`);
+    });
+  }
+  lines.push('');
+  lines.push(`อัปเดตล่าสุด: ${new Date().toLocaleString('th-TH', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}`);
+  lines.push('');
+  lines.push('ดูรายละเอียดทั้งหมด: https://wuttinuntn-design.github.io/AIB_Safety/');
+  return lines.join('\n');
+}
+
+function openLineSummaryModal() {
+  document.getElementById('line-summary-text').value = buildLineSummaryText();
+  document.getElementById('line-summary-modal').style.display = 'flex';
+  safeCreateIcons();
+}
+function closeLineSummaryModal(e) {
+  if (e && e.target !== document.getElementById('line-summary-modal')) return;
+  document.getElementById('line-summary-modal').style.display = 'none';
+}
+async function copyLineSummaryText() {
+  const text = document.getElementById('line-summary-text').value;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      throw new Error('no clipboard api');
+    }
+    showToast('คัดลอกข้อความแล้ว พร้อมวางในไลน์', 'success');
+  } catch (err) {
+    // Fallback สำหรับเบราว์เซอร์/บริบทที่ไม่รองรับ navigator.clipboard (เช่น ไม่ใช่ HTTPS)
+    const ta = document.getElementById('line-summary-text');
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast('คัดลอกข้อความแล้ว พร้อมวางในไลน์', 'success');
+    } catch (err2) {
+      showToast('คัดลอกไม่สำเร็จ — เลือกข้อความแล้วกด Ctrl+C เอง', 'error');
+    }
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('page-audit') && document.getElementById('page-audit').classList.contains('active')) {
+    if (auditMapMode === 'heat' && document.getElementById('audit-map-view').style.display !== 'none') {
+      renderAuditHeatmap();
+    }
+    if (document.getElementById('audit-table-view') && document.getElementById('audit-table-view').style.display !== 'none') {
+      renderAuditMiniMap();
+    }
+  }
+});
+
+// ============================================================
+// TAB NAVIGATION (single page, no sidebar)
+// ============================================================
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('tab-dashboard').classList.toggle('active', page === 'dashboard');
+  document.getElementById('tab-findings').classList.toggle('active', page === 'findings');
+  document.getElementById('tab-gallery').classList.toggle('active', page === 'gallery');
+  safeCreateIcons();
+  if (page === 'findings') { populateRoundFilter(); filterAudit(); }
+  if (page === 'dashboard') { updateDashboardKPIs(); renderDashboardHeatmap(); renderTrendChart(); renderZoneBreakdown(); renderRecentFindings(); }
+  if (page === 'gallery') { populateGalleryFilters(); filterGallery(); }
+}
+
+function goToFindingsFiltered(opts = {}) {
+  navigate('findings');
+  const statusEl = document.getElementById('audit-status-filter');
+  const searchEl = document.getElementById('audit-search');
+  if (statusEl) statusEl.value = opts.status || '';
+  if (searchEl) searchEl.value = opts.zone || '';
+  filterAudit();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDashboardKPIs() {
+  const total = auditData.length;
+  const aib = auditData.filter(r => r.source === 'AIB').length;
+  const safety = auditData.filter(r => r.source === 'Safety Audit').length;
+  const closed = auditData.filter(r => r.status === 'เสร็จแล้ว').length;
+  const open = total - closed;
+  const overdue = auditData.filter(auditIsOverdue).length;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('dash-kpi-total', total);
+  set('dash-kpi-aib', aib);
+  set('dash-kpi-safety', safety);
+  set('dash-kpi-closed', closed);
+  set('dash-kpi-open', open);
+  set('dash-kpi-overdue', overdue);
+
+  // "รอบตรวจล่าสุด" = วันที่ที่พบบ่อยที่สุดในข้อมูล (mode) ไม่ใช่วันที่ล่าสุดสุด
+  // เพราะถ้าเพิ่ม finding เดี่ยวๆ ทีหลัง (default วันที่เป็นวันนี้) จะทำให้ตัวเลขนี้เพี้ยนเป็น 0 ทุกครั้ง
+  const dateCounts = {};
+  auditData.forEach(r => { if (r.date) { const d = String(r.date).slice(0, 10); dateCounts[d] = (dateCounts[d] || 0) + 1; } });
+  const dateEntries = Object.entries(dateCounts);
+  const lastAuditDate = dateEntries.length
+    ? dateEntries.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? 1 : -1))[0][0]
+    : null;
+  if (lastAuditDate) {
+    const days = Math.max(0, Math.floor((new Date() - new Date(lastAuditDate)) / 86400000));
+    set('hero-days-count', days);
+    set('hero-audit-date', fmtDateOnly(lastAuditDate));
+  }
+}
+
+function renderDashboardHeatmap() {
+  const pinned = auditData.filter(r => r.pos_x !== '' && r.pos_x !== undefined && r.pos_x !== null);
+  renderHeatmapOnto('dash-heatmap-wrap', 'dash-heatmap-img', 'dash-heatmap-layer', pinned.filter(r => r.status !== 'เสร็จแล้ว'));
+  renderResolvedOverlay('dash-heatmap-wrap', pinned);
+  const note = document.getElementById('dash-heatmap-note');
+  if (note) {
+    note.textContent = pinned.length > 0
+      ? `จาก ${pinned.length} Finding ที่ระบุตำแหน่งไว้ (จากทั้งหมด ${auditData.length}) · สีเข้ม = ปัญหาที่ยังค้าง · จุดเขียว = แก้ไขแล้ว`
+      : 'ยังไม่มี Finding ที่ระบุตำแหน่งบนแผนที่';
+  }
+}
+
+// ============================================================
+// PHOTO GALLERY — ดูรูปทั้งหมดโดยไม่ต้องไล่เปิดทีละ Finding
+// ============================================================
+function populateGalleryFilters() {
+  const zoneEl = document.getElementById('gallery-zone-filter');
+  if (!zoneEl) return;
+  const current = zoneEl.value;
+  const zones = [...new Set(auditData.map(r => r.zone || r.responsible).filter(Boolean))];
+  zoneEl.innerHTML = '<option value="">ทุกหน่วยงาน</option>' + zones.map(z => `<option value="${esc(z)}">${esc(z)}</option>`).join('');
+  zoneEl.value = current;
+}
+
+function filterGallery() {
+  const q = (document.getElementById('gallery-search').value || '').toLowerCase();
+  const zone = document.getElementById('gallery-zone-filter').value;
+  const status = document.getElementById('gallery-status-filter').value;
+  const withPhotos = auditData.filter(r => r.image_url || r.action_image_url);
+  const filtered = withPhotos.filter(r =>
+    (!q || (r.detail || '').toLowerCase().includes(q) || (r.zone || r.responsible || '').toLowerCase().includes(q)) &&
+    (!zone || (r.zone || r.responsible) === zone) &&
+    (!status || r.status === status)
+  );
+  renderGalleryGrid(filtered, withPhotos.length);
+}
+
+function renderGalleryGrid(records, totalWithPhotos) {
+  const grid = document.getElementById('gallery-grid');
+  const countEl = document.getElementById('gallery-count');
+  if (countEl) countEl.textContent = `แสดง ${records.length} รูป (จากทั้งหมด ${totalWithPhotos} Finding ที่มีรูปแนบ)`;
+  if (!grid) return;
+  if (!records.length) {
+    grid.innerHTML = `<p class="text-sm col-span-full text-center py-10" style="color:#6B7270;">ไม่พบรูปภาพที่ตรงเงื่อนไข</p>`;
+    return;
+  }
+  grid.innerHTML = records.map(r => {
+    const img = r.image_url || r.action_image_url;
+    const hasBoth = r.image_url && r.action_image_url;
+    return `
+    <div class="gallery-card" onclick="viewAuditFinding('${r.id}')">
+      <div class="gallery-status-bar" style="background:${AUDIT_STATUS_DOT_COLOR[r.status] || '#6B7270'};"></div>
+      <div class="gallery-img-wrap">
+        <img src="${img}" alt="${esc(r.detail)}" loading="lazy"/>
+        ${hasBoth ? `<div class="gallery-multi-badge"><i data-lucide="images" class="w-3 h-3"></i> 2 รูป</div>` : ''}
+      </div>
+      <div class="gallery-caption">
+        <div class="text-xs font-500" style="color:#16191A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(r.detail)}</div>
+        <div class="flex items-center justify-between mt-1.5">
+          <span class="text-xs" style="color:#6B7270;">${esc(r.zone || r.responsible) || '-'}</span>
+          ${auditStatusBadge(r.status)}
+        </div>
+      </div>
+    </div>
+  `;
+  }).join('');
+  safeCreateIcons();
+}
+
+let trendChartInstance = null;
+function renderTrendChart() {
+  const canvas = document.getElementById('trend-chart');
+  if (!canvas) return;
+  const byRound = {};
+  auditData.forEach(r => {
+    const rid = r.round_id;
+    if (!rid) return;
+    if (!byRound[rid]) byRound[rid] = { total: 0, closed: 0 };
+    byRound[rid].total++;
+    if (r.status === 'เสร็จแล้ว') byRound[rid].closed++;
+  });
+  const rounds = roundsData
+    .filter(r => byRound[r.id])
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const labels = rounds.map(r => r.label);
+  const totals = rounds.map(r => byRound[r.id].total);
+  const closed = rounds.map(r => byRound[r.id].closed);
+
+  if (trendChartInstance) trendChartInstance.destroy();
+  trendChartInstance = new Chart(canvas.getContext('2d'), {
+    data: {
+      labels,
+      datasets: [
+        { type: 'bar', label: 'Finding ทั้งหมด', data: totals, backgroundColor: '#B8860B', borderRadius: 0 },
+        { type: 'line', label: 'แก้ไขแล้ว', data: closed, borderColor: '#1E9E5A', backgroundColor: '#1E9E5A', tension: .3, pointRadius: 4 },
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: '#4A4F4C', font: { family: 'Sarabun', size: 11 } } },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#4A4F4C', font: { family: 'DM Mono', size: 10 } } },
+        y: { grid: { color: '#ECEAE0' }, ticks: { precision: 0, color: '#6B7270' } },
+      },
+      animation: { duration: 500 },
+    }
+  });
+  const note = document.getElementById('trend-chart-note');
+  if (note) {
+    note.textContent = rounds.length > 1
+      ? `เทียบทั้งหมด ${rounds.length} รอบตรวจ — เมื่อเริ่มรอบตรวจใหม่ กราฟนี้จะยาวขึ้นอัตโนมัติ`
+      : `ตอนนี้มีข้อมูล "${rounds[0] ? rounds[0].label : 'รอบที่ 1'}" รอบเดียว — พอเริ่มรอบตรวจถัดไป กราฟนี้จะเทียบให้อัตโนมัติว่าลดลงหรือไม่`;
+  }
+}
+
+function renderZoneBreakdown() {
+  const container = document.getElementById('dash-zone-breakdown');
+  if (!container) return;
+  const byZone = {};
+  auditData.forEach(r => {
+    const z = r.zone || r.responsible || 'ไม่ระบุหน่วยงาน';
+    if (!byZone[z]) byZone[z] = { total: 0, open: 0, closed: 0 };
+    byZone[z].total++;
+    if (r.status === 'เสร็จแล้ว') byZone[z].closed++; else byZone[z].open++;
+  });
+  const sorted = Object.entries(byZone).sort((a, b) => b[1].open - a[1].open || b[1].total - a[1].total);
+  const maxTotal = sorted.length ? Math.max(...sorted.map(x => x[1].total)) : 1;
+  container.innerHTML = sorted.length ? sorted.map(([zone, s]) => {
+    const openPct = Math.round(s.open / maxTotal * 100);
+    const closedPct = Math.round(s.closed / maxTotal * 100);
+    return `
+    <div onclick="goToFindingsFiltered({zone:'${esc(zone).replace(/'/g, "\\'")}'})" class="wf-zone-row" style="cursor:pointer;">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-sm font-600" style="color:#16191A;"><i data-lucide="map-pin" class="w-3 h-3 inline align-[-1px]" style="color:#B8860B;"></i> ${esc(zone)}</span>
+        <span class="text-xs" style="color:#6B7270;">
+          <span class="font-700" style="color:#16191A;">${s.total}</span> เรื่อง
+          &nbsp;·&nbsp;<span class="font-700" style="color:${s.open > 0 ? '#B8860B' : '#6B7270'};">ค้าง ${s.open}</span>
+          &nbsp;·&nbsp;<span class="font-700" style="color:#1E9E5A;">เสร็จ ${s.closed}</span>
+        </span>
+      </div>
+      <div style="height:8px;background:#ECEAE0;display:flex;overflow:hidden;">
+        <div style="height:100%;width:${openPct}%;background:#B8860B;"></div>
+        <div style="height:100%;width:${closedPct}%;background:#1E9E5A;"></div>
+      </div>
+    </div>
+  `;
+  }).join('') : '<p class="text-sm" style="color:#6B7270;">ยังไม่มีข้อมูล</p>';
+  safeCreateIcons();
+}
+function renderRecentFindings() {
+  const container = document.getElementById('dash-recent-findings');
+  if (!container) return;
+  const recent = [...auditData].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  container.innerHTML = recent.length ? recent.map(r => `
+    <div class="flex items-start gap-3" onclick="navigate('findings');viewAuditFinding('${r.id}')" style="cursor:pointer;">
+      <div class="w-8 h-8 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:#FFF4CC;">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5" style="color:#D9432B;"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-500" style="color:#16191A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(r.detail)}</p>
+        <p class="text-xs mt-0.5" style="color:#6B7270;">${esc(r.zone || r.responsible) || '-'} · ${auditSourceBadge(r.source)}</p>
+      </div>
+      <span class="flex-shrink-0">${auditStatusBadge(r.status)}</span>
+    </div>
+  `).join('') : '<p class="text-sm" style="color:#6B7270;">ยังไม่มีข้อมูล</p>';
+  safeCreateIcons();
+}
+
+// ------------------------------------------------------------
+// CHARTS
+// ------------------------------------------------------------
+let statusPieInstance = null;
+function renderStatusPieChart() {
+  const canvas = document.getElementById('status-pie-chart');
+  if (!canvas) return;
+  const colors = { 'รอกำหนดผู้รับผิดชอบ': '#6B7270', 'รอดำเนินการ': '#B8860B', 'ยังไม่เสร็จ': '#D9432B', 'เสร็จแล้ว': '#1E9E5A' };
+  const byStatus = {};
+  auditData.forEach(r => { byStatus[r.status] = (byStatus[r.status] || 0) + 1; });
+  const labels = Object.keys(byStatus);
+  const values = Object.values(byStatus);
+  const total = values.reduce((a, b) => a + b, 0);
+  const ctx = canvas.getContext('2d');
+  if (statusPieInstance) statusPieInstance.destroy();
+  statusPieInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: labels.map(l => colors[l] || '#6B7270'), borderWidth: 0, hoverOffset: 4 }] },
+    options: { cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: i => ` ${i.label}: ${i.raw} รายการ` } } }, animation: { duration: 700 } }
+  });
+  const legendEl = document.getElementById('status-pie-legend');
+  if (legendEl) {
+    legendEl.innerHTML = labels.map((l, i) => `
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${colors[l] || '#6B7270'};"></span>
+        <span class="text-xs flex-1" style="color:#4A4F4C;">${esc(l)}</span>
+        <span class="text-xs font-600" style="color:#16191A;">${values[i]} (${total ? Math.round(values[i] / total * 100) : 0}%)</span>
+      </div>`).join('');
+  }
+}
+
+let paretoChartInstance = null;
+function renderParetoChart() {
+  const canvas = document.getElementById('pareto-chart');
+  if (!canvas) return;
+  const byZone = {};
+  auditData.forEach(r => { const z = r.zone || r.responsible || 'ไม่ระบุ'; byZone[z] = (byZone[z] || 0) + 1; });
+  const sorted = Object.entries(byZone).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const labels = sorted.length ? sorted.map(x => x[0]) : ['ยังไม่มีข้อมูล'];
+  const values = sorted.length ? sorted.map(x => x[1]) : [0];
+  const total = values.reduce((a, b) => a + b, 0);
+  let running = 0;
+  const cumulativePct = values.map(v => { running += v; return total ? Math.round(running / total * 100) : 0; });
+  const ctx = canvas.getContext('2d');
+  if (paretoChartInstance) paretoChartInstance.destroy();
+  paretoChartInstance = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        { type: 'bar', label: 'จำนวน Finding', data: values, backgroundColor: '#4A4F4C', borderRadius: 0, yAxisID: 'y' },
+        { type: 'line', label: '% สะสม', data: cumulativePct, borderColor: '#D9432B', backgroundColor: '#D9432B', tension: .3, yAxisID: 'y1', pointRadius: 3 },
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: '#4A4F4C', font: { family: 'Sarabun', size: 11 } } },
+        tooltip: { callbacks: { label: i => i.dataset.yAxisID === 'y1' ? ` % สะสม: ${i.raw}%` : ` ${i.raw} รายการ` } },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#4A4F4C', font: { family: 'Sarabun', size: 11 } } },
+        y: { position: 'left', grid: { color: '#ECEAE0' }, ticks: { precision: 0, color: '#6B7270' } },
+        y1: { position: 'right', min: 0, max: 100, grid: { display: false }, ticks: { color: '#D9432B', callback: v => v + '%' } },
+      },
+      animation: { duration: 600 },
+    }
+  });
+  const note = document.getElementById('pareto-chart-note');
+  if (note) note.textContent = total > 0
+    ? `รวม ${total} Finding · เส้นแดง = % สะสม (โซน 2-3 อันดับแรกมักครอบคลุมส่วนใหญ่ของปัญหา)`
+    : 'ยังไม่มีข้อมูล';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  safeCreateIcons();
+  auditFiltered = [...auditData];
+  updateDashboardKPIs();
+  renderDashboardHeatmap();
+  renderStatusPieChart();
+  renderTrendChart();
+  renderRecentFindings();
+  renderZoneBreakdown();
+  populateRoundFilter();
+  renderAuditTable();
+  renderAuditMiniMap();
+  updateAuditKPIs();
+  safeCreateIcons();
+  loadFromGAS(); // ลองโหลดข้อมูลจริงจาก Google Sheet มาทับ demo data
+});
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('page-dashboard').classList.contains('active')) renderDashboardHeatmap();
+  if (document.getElementById('page-findings').classList.contains('active')) {
+    if (auditMapMode === 'heat' && document.getElementById('audit-map-view').style.display !== 'none') renderAuditHeatmap();
+    if (document.getElementById('audit-table-view') && document.getElementById('audit-table-view').style.display !== 'none') renderAuditMiniMap();
+  }
+});
+
+</script>
+</body>
+</html>
